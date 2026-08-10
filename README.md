@@ -1,5 +1,11 @@
 # JSNK
 
+> 💬 **Se sente meio esquecido por aí?** Desde a migração da plataforma oficial, o diálogo
+> entre devs Sankhya ficou mais difícil. Comunidade (não oficial) no Discord:
+> **<https://discord.gg/ke8DmDKdk7>** — bons códigos, amigo!
+
+---
+
 Customização visual e funcional do Sankhya por **injeção de scripts**, sem tocar no
 servidor.
 

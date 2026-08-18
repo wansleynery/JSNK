@@ -33,6 +33,7 @@ scripts/     ← sobe para Repo://scripts/, mantendo a árvore e os nomes
   global.js       comportamentos aplicados em toda tela
   mge/system.css  barra de tarefas e abas do shell
   mge/system.js   tema, logo, busca rápida e popup de configurações
+temas/       ← galeria de temas prontos (opcional — ver "Temas customizados")
 ```
 
 Os arquivos estão minificados, prontos para uso. Os nomes **não** levam `.min` de
@@ -82,6 +83,83 @@ escuro) mora nele.
 
 Atualizar um arquivo de customização **não** exige mexer no componente — é a
 vantagem de separar as duas peças.
+
+## Personalização pelo usuário
+
+Cada usuário abre um popup de configurações pelo **botão mágico**, que aparece na
+barra de tarefas assim que o loader instala (a menos que um admin o esconda — veja
+"Políticas de administrador" abaixo). As mudanças são salvas por usuário
+(`TSIPAR`) e valem em qualquer dispositivo/navegador em que ele entrar.
+
+- **Aparência**: cor de destaque (accent), modo escuro, logo (original,
+  compacta, substituída por imagem própria ou oculta) e estilo da pesquisa
+  (padrão ou Spotlight, estilo macOS).
+- **Barra de Abas**: botões nativos da barra de tarefas (menu, ajuda,
+  notificações, Aplicações Sankhya) e estilo visual das abas (linear, quadro,
+  clássico, neon).
+- **Popup**: tema visual dos painéis laterais que os scripts de tela criam —
+  `glassify` (vidro translucido + accent) ou `metal` (degradê metálico).
+- **Temas**: tema customizado (CSS) da barra de tarefas — veja a seção
+  seguinte.
+
+## Temas customizados
+
+Além do accent/modo escuro (que qualquer usuário ajusta pelo popup acima), o
+card do JSNK aceita **arraste de um arquivo `.css`** para trocar a aparência da
+barra de tarefas/abas por completo — cor, textura, o que o autor do tema quiser.
+O arquivo sobe para `Repo://temas/<arquivo>.css`, fica disponível pra base
+inteira, e passa a aparecer no combobox da seção "Temas" do popup — inclusive
+para quem não fez o upload.
+
+Este repositório inclui uma pequena **galeria de temas prontos** em `temas/`:
+baixe qualquer um e arraste no card para instalar.
+
+```
+temas/tech.css        circuito + fonte tecnológica, textura embutida
+temas/midnight.css    paleta escura, só cor
+temas/carbon.css      fibra de carbono, imagem embutida
+temas/rose.css        paleta rosa, só cor
+temas/sea-glass.css   paleta verde-água, só cor
+temas/halloween.css   tema sazonal
+temas/natal.css       tema sazonal
+```
+
+Cada arquivo é autocontido — não dependem uns dos outros nem de nada fora do
+próprio `.css`.
+
+## Políticas de administrador
+
+Um admin Sankhya pode restringir a personalização por **usuário** (`TSIUSU`)
+e/ou **grupo** (`TSIGRU`), cadastrando campos `AD_JSNK_*` opcionais nessas
+tabelas — a base pode não ter nenhum, alguns, ou todos. Quando o grupo define
+um valor, ele prevalece sobre o do usuário; se a consulta falhar (rede,
+permissão, campo não cadastrado), o JSNK assume "sem nenhuma restrição" —
+**fail-open** deliberado, porque isto é uma feature de personalização, não uma
+fronteira de segurança.
+
+| Campo | Tipo | Efeito |
+| --- | --- | --- |
+| `AD_JSNK_ATIVO` | S/N | JSNK ativado para este usuário/grupo (kill-switch: reverte tudo ao padrão nativo) |
+| `AD_JSNK_INIBEPOPUP` | S/N | Esconde o botão mágico inteiro (sem desativar o JSNK) |
+| `AD_JSNK_INIBEVERCONFG` | S/N | Esconde a seção "Aparência" |
+| `AD_JSNK_INIBEMUDARCOR` | S/N | Bloqueia trocar a cor de destaque |
+| `AD_JSNK_ACCENTPADRAO` | hex | Cor de destaque forçada |
+| `AD_JSNK_INIBEMUDARDARK` | S/N | Bloqueia alternar o modo escuro |
+| `AD_JSNK_DARKPADINICIAL` | S/N | Modo escuro já ligado no primeiro acesso |
+| `AD_JSNK_INIBEMUDARABA` | S/N | Bloqueia trocar o estilo da aba |
+| `AD_JSNK_INIBEVERLOGO` | S/N | Esconde o campo de logo |
+| `AD_JSNK_INIBEMUDARLOGO` | S/N | Bloqueia customizar a logo |
+| `AD_JSNK_INIBEVERBUSCA` | S/N | Esconde o campo de pesquisa |
+| `AD_JSNK_INIBEMUDARBUSCA` | S/N | Bloqueia trocar o modo de busca |
+| `AD_JSNK_INIBEVERBOTOES` | S/N | Esconde o bloco de botões nativos |
+| `AD_JSNK_INIBEMUDARBOTOES` | S/N | Bloqueia exibir/esconder os botões nativos |
+| `AD_JSNK_INIBEVERPOPUP` | S/N | Esconde a seção "Popup" |
+| `AD_JSNK_INIBEMUDARPOPUP` | S/N | Bloqueia trocar o tema dos popups |
+| `AD_JSNK_TEMAPADINICIAL` | texto | Nome do tema custom aplicado por padrão no primeiro acesso |
+| `AD_JSNK_INIBEVERTEMA` | S/N | Esconde a seção "Temas" |
+| `AD_JSNK_INIBEINSTATEMA` | S/N | Bloqueia instalar tema novo (arraste no card) |
+| `AD_JSNK_INIBEMUDARTEMA` | S/N | Bloqueia trocar de tema já instalado |
+| `AD_JSNK_INIBEDEBUG` | S/N | Bloqueia o console de debug |
 
 ## Cache
 

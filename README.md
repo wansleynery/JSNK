@@ -62,11 +62,21 @@ inteiro (tema, shell, comportamentos globais).
    base, sem editar nada.
 
 O card não fica em branco. Ele mostra um painel estilo *neofetch* (logo ASCII +
-`status`, `uptime`, `versao`, `tamanho` e `creditos`, mais a paleta da cor de
+`status`, `versao`, `uptime`, `tamanho` e `creditos`, mais a paleta da cor de
 destaque), usa o accent escolhido pelo usuário e cabe em qualquer uma das nove
 resoluções de card do Sankhya (190/390/590 × 174/265/448) sem rolagem. A linha
 `creditos` leva dois links, para o autor e para este repositório — útil para quem
 encontrar o card numa base e quiser saber o que é.
+
+A linha `versao` mostra uma bolinha (cor de destaque = tudo certo, vermelha =
+existe uma versão mais nova aqui no GitHub). Essa checagem roda no **navegador do
+usuário** (bate num CDN público, fora da rede do Sankhya) — **se a máquina/rede
+de quem está com o navegador aberto não tiver saída à internet liberada** (VPN
+corporativa, firewall restritivo), ela simplesmente falha em silêncio: a bolinha
+fica na cor de destaque (padrão "sem novidade"), sem erro no console e sem
+atrasar ou travar nada, porque o resto do card e do loader não depende dela em
+nada. Não há como saber que existe uma versão nova sem essa
+saída à internet, mas também não há nenhum efeito colateral por não ter.
 
 ### 2. Arquivos de customização
 

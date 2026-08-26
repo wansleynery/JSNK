@@ -4,6 +4,8 @@
 > entre devs Sankhya ficou mais difícil. Comunidade (não oficial) no Discord:
 > **<https://discord.gg/ke8DmDKdk7>** — bons códigos, amigo!
 
+**Versão atual:** 44
+
 ---
 
 Customização visual e funcional do Sankhya por **injeção de scripts**, sem tocar no

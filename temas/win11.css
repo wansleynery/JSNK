@@ -1,0 +1,949 @@
+/*
+ * Windows - tema customizado JSNK
+ *
+ * Escopo: so a barra de abas (.Taskbar-container/table.Taskbar) - mesmo
+ * modelo estrutural de midnight.css/tech.css. Ver tech.css pros comentarios
+ * tecnicos completos (por que cada seletor e do jeito que e).
+ *
+ * Proposta: taskbar do Windows 11 - fundo translucido solido (sem blur, ver
+ * nota abaixo), sem separador entre icones, aba ativa com "pilula" de
+ * accent embaixo, busca em pilula. Paleta muda com html.dark-theme (nao e
+ * inversao automatica). Fonte: nenhuma embutida - 'Segoe UI' ja e nativa do
+ * Windows e cai pro system-ui de cada SO fora dele.
+ */
+
+:root {
+    --win-bg:        rgba(243, 243, 243, .78);
+    --win-header-bg: rgba(222, 222, 222, .88);
+    --win-borda:     rgba(0, 0, 0, .07);
+    --win-texto:     #1b1b1b;
+    --win-texto-dim: #616161;
+    --win-hover:     rgba(0, 0, 0, .05);
+    --win-ativo-bg:  rgba(255, 255, 255, .6);
+    --win-accent:    var(--accent, #0078d4);
+    --win-fonte:     'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --win-raio:      4px;
+}
+
+/* Paleta escura de verdade (nao e o invert(1) nativo, cancelado abaixo). */
+html.dark-theme {
+    --win-bg:        rgba(32, 32, 32, .8);
+    --win-header-bg: rgba(18, 18, 18, .88);
+    --win-borda:     rgba(255, 255, 255, .08);
+    --win-texto:     #f2f2f2;
+    --win-texto-dim: #b0b0b0;
+    --win-hover:     rgba(255, 255, 255, .08);
+    --win-ativo-bg:  rgba(255, 255, 255, .14);
+}
+
+/* ================= CONTAINER / FUNDO ================= */
+
+/* Reposiciona a barra pra embaixo - `top: auto` neutraliza o `top: 0px`
+   inline do GWT pro `bottom: 0` decidir a posicao. */
+.Taskbar-container {
+    top: auto !important;
+    bottom: 0 !important;
+    z-index: 1; /* precisa de valor explicito, ver secao WALLPAPER */
+    /* Tingimento solido, sem backdrop-filter: testado ao vivo, o blur saia
+       marrom no dark mode por causa do invert(1) nativo (ver cancelamento
+       logo abaixo - hoje mora na tabela de dentro, nao aqui). */
+    background-color: var(--win-bg) !important;
+    border-top: 1px solid var(--win-borda);
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, .12);
+    /* overflow:hidden nativo corta o Spotlight/notificacao - mge/system.js
+       ja forca visible nesta mesma classe por outro motivo. */
+    overflow: visible !important;
+}
+
+/* table.Taskbar preenche o container por dentro - transparent aqui evita
+   empilhar duas camadas translucidas (so o container de fora tinge). */
+table.Taskbar {
+    background-color: transparent !important;
+}
+
+/* Repete a classe pra vencer a regra nativa (mais especifica) do dark-theme. */
+html .Evo .Taskbar.Taskbar.Taskbar {
+    background-color: transparent !important;
+}
+
+/* Cancela o invert(1) global do dark-theme pra barra inteira de uma vez -
+   um so cancelamento no ancestral mais externo (nao na tabela de dentro,
+   que dobraria a inversao). `background` mora NESTA regra, nao separado,
+   porque precisa de especificidade maior que a regra nativa
+   (`html.dark-theme .Evo .Taskbar-container { background: #e7e7e7 }`,
+   0,3,1) que pinta claro esperando ser invertida - aqui o cancelamento
+   tira essa segunda inversao, entao essa cor clara fica clara de verdade. */
+html.dark-theme .Evo .Taskbar-container.Taskbar-container {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+.Taskbar-container,
+.Taskbar-container .gwt-Label {
+    color: var(--win-texto);
+    font-family: var(--win-fonte), sans-serif;
+}
+
+/* Espelha o inset do conteudo (`div:has(> #viewStack)`) ja que a barra
+   virou bottom:0 - sem isto sobra uma faixa vazia no topo. `:has(>
+   #viewStack)` mira o pai direto do id fixo, sem depender de classe (o
+   pai nao tem uma confiavel - varia entre `.Desktop-activity` e vazia). */
+div:has(> #viewStack) {
+    top: 0 !important;
+    bottom: 40px !important;
+}
+
+/* ================= WALLPAPER (fundo em tela cheia) ================= */
+
+/* `position: fixed` tira a imagem da caixa de todos os ancestrais
+   posicionados e ancora na viewport inteira, sem mudar o layout deles.
+   z-index EXPLICITO nos dois lados (0 aqui, 1 na Taskbar-container acima)
+   e obrigatorio: `auto`/`0` empatados decidem por ordem no DOM (a imagem
+   ficaria por cima da barra, que vem depois dela); um z-index negativo
+   "resolve" isso mas esconde a imagem atras do fundo cinza padrao do app
+   tambem - testado ao vivo. `pointer-events: none` evita capturar cliques
+   dos cards. */
+.Desktop > img.gwt-Image {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ================= ICONES ================= */
+
+/* Preto (brightness(0)) no claro, o dark-theme abaixo clareia pra branco. */
+.Taskbar-icon {
+    filter: brightness(0) opacity(.6);
+    transition: opacity .15s ease, filter .15s ease;
+}
+.Taskbar-icon:hover {
+    filter: brightness(0) opacity(.9);
+}
+html.dark-theme .Evo .Taskbar .Taskbar-icon {
+    filter: brightness(0) invert(1) opacity(.75) !important;
+}
+html.dark-theme .Evo .Taskbar .Taskbar-icon:hover {
+    filter: brightness(0) invert(1) opacity(1) !important;
+}
+
+/* Excecao: icones que sao <img> de verdade (foto do usuario, PNG de app) -
+   brightness(0)+invert(1) vira a foto num circulo branco liso, testado ao
+   vivo. :has(img) isola so esse caso. */
+.Taskbar-icon:has(img) {
+    filter: none !important;
+}
+.Taskbar-icon:has(img):hover {
+    filter: none !important;
+}
+
+/* Menu do sistema: logo de 4 quadrados no lugar do glifo nativo
+   (`.icon-menu::before` e fonte de icone propria do Sankhya, sem mapa
+   conhecido pra trocar por outro glifo). Zera o content nativo e desenha
+   via ::after com SVG mask + currentColor - herda o mesmo filter de cima,
+   nao precisa tratar dark-theme aqui. */
+.Evo .Taskbar-icon.icon-menu.icon-menu::before {
+    content: none !important;
+}
+
+/* Zera o fundo em qualquer estado ativo/pressionado - mesma familia de bug
+   "claro que devia virar escuro" do container acima (cancelamos o invert). */
+.Evo .Taskbar-icon.icon-menu,
+.Evo .Taskbar-icon.icon-menu:hover,
+.Evo .Taskbar-icon.icon-menu:active,
+.Evo .Taskbar-icon.icon-menu:focus,
+.Evo .Taskbar-icon.icon-menu.active,
+.Evo .Taskbar-icon.icon-menu.gwt-PopupPanelGlassClosed,
+.Evo .Taskbar-icon.icon-menu[aria-expanded="true"] {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Estado "selecionado" real (confirmado no Computed do DevTools):
+   `.Taskbar-icon-selected` - mesma familia de bug acima. */
+.Evo .Taskbar-icon-selected {
+    background: transparent !important;
+}
+
+/* Bordinha tipo botao Iniciar enquanto o menu esta aberto - detecta pela
+   PRESENCA do popup no DOM (`:has()`), nao por classe de estado do GWT
+   (incerta, era a causa do bug branco acima). */
+body:has(.gwt-PopupPanel.ListShortcutsMenuPopup) .Evo .Taskbar-icon.icon-menu {
+    background: var(--win-hover) !important;
+    border-radius: 6px;
+    border: 1px solid aliceblue !important;
+    box-sizing: border-box;
+}
+
+/* Hover puro (menu fechado) - pilula cinza. Repete .icon-menu pra vencer a
+   regra `:hover{transparent}` acima sem tocar nela (ainda necessaria pro
+   bug do fundo branco nativo). */
+.Evo .Taskbar-icon.icon-menu.icon-menu:hover {
+    background: var(--win-hover) !important;
+    border-radius: 6px;
+}
+.Evo .Taskbar-icon.icon-menu::after {
+    content: '';
+    display: block;
+    width: 16px;
+    height: 16px;
+    background-color: currentColor;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='9' height='9'/%3E%3Crect x='13' y='2' width='9' height='9'/%3E%3Crect x='2' y='13' width='9' height='9'/%3E%3Crect x='13' y='13' width='9' height='9'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+}
+
+/* ================= REORDENACAO (menu / personalizacao / busca) ================= */
+
+/* A Taskbar e uma <table> - `order` so existe em flex/grid, entao a linha
+   vira `display: flex` (mesmos nos DOM, mesmos listeners, so a pintura
+   muda). RISCO CONHECIDO: o <td width="100%"> do AppManager contava com o
+   modelo de tabela pra "ocupar o espaco que sobra" - troca por flex:1 1
+   auto, ainda nao testado contra o JS de scroll das abas. */
+.Evo .Taskbar > tbody > tr {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.Evo .Taskbar > tbody > tr > td:has(.AppManager) {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Zera padding nativo (pensado pra outra posicao na fila original) e
+   deixa o gap do flex acima ser a unica fonte de espaco. */
+.Evo .Taskbar > tbody > tr > td:has(.icon-menu),
+.Evo .Taskbar > tbody > tr > td:has(#dark-theme-toggle),
+.Evo .Taskbar > tbody > tr > td:has(.SearchAppText) {
+    padding: 0 !important;
+}
+
+/* Ordem visual: menu -> personalizacao -> busca -> resto. `order` nao move
+   nada no DOM. :has() mira pelo conteudo, sem depender de classe no <td>. */
+.Evo .Taskbar > tbody > tr > td:has(.icon-menu) {
+    order: -3;
+}
+.Evo .Taskbar > tbody > tr > td:has(#dark-theme-toggle) {
+    order: -2;
+}
+.Evo .Taskbar > tbody > tr > td:has(.SearchAppText) {
+    order: -1;
+}
+
+/* Notificacao a direita da data (ordem real do Windows 11). Fora da
+   <table> (position: fixed, ancora right/bottom), mesmo elemento nativo
+   so reposicionado. width:28px evita a celula colapsar pra 0 (flex-item
+   com overflow:hidden nativo resolve min-width:auto pra 0). z-index:2
+   (> 1 do container) evita empate de stacking. */
+.Evo .Taskbar > tbody > tr > td:has(.icon-notification) {
+    position: fixed !important;
+    right: 4px !important;
+    bottom: 4px !important;
+    width: 28px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2 !important;
+}
+
+/* Desenha um sino do zero (mesma tecnica do icone de menu). Contador
+   nativo ("0") some junto - nao temos como reimplementar a leitura dele. */
+.Evo .Taskbar-icon.icon-notification.icon-notification::before {
+    content: none !important;
+}
+.gwt-Label.ContadorAvisoSistema-label {
+    display: none !important;
+}
+.Evo .Taskbar-icon.icon-notification::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-color: currentColor;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-4-5.66V4a2 2 0 1 0-4 0v1.34A6 6 0 0 0 6 11v5l-2 2v1h16v-1z'/%3E%3C/svg%3E");
+    mask-repeat: no-repeat;
+    mask-size: contain;
+    mask-position: center;
+}
+
+/* Este tema precisa do sino visivel mesmo se o usuario desligou "Mostrar
+   notificacoes" no popup (mge/system.js esconde .icon-notification com
+   2 classes de especificidade) - aqui forca visivel com 3 classes
+   (0,3,0 > 0,2,0). display:flex, nao block: valor nativo de .Taskbar-icon. */
+.Evo .Taskbar-icon.icon-notification.icon-notification {
+    display: flex !important;
+}
+
+.Evo .Taskbar > tbody > tr > td:has(.icon-notification):hover {
+    background: var(--win-hover) !important;
+    border-radius: 6px;
+}
+
+/* transform:scale() em vez de width/height/font-size - nao precisa saber
+   se o glifo por baixo e fonte ou mascara. */
+#dark-theme-toggle {
+    transform: scale(.82);
+}
+#dark-theme-toggle:hover {
+    background: var(--win-hover) !important;
+    border-radius: 6px !important;
+}
+#dark-theme-toggle:hover .Taskbar-icon.icon-magic {
+    filter: none !important;
+    color: inherit !important;
+}
+
+/* Diminui a altura da caixa de busca. height numa <table> e so minimo -
+   precisa de box-sizing:border-box nos 3 niveis (tabela/celula/input) pra
+   borda+padding nao somarem por cima do valor pedido (testado ao vivo:
+   sem isso voltava a ~40px). */
+.Evo .SearchAppText.SearchAppText {
+    height: 28px !important;
+    box-sizing: border-box !important;
+}
+.Evo .SearchAppText.SearchAppText td {
+    height: 28px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    box-sizing: border-box !important;
+}
+.Evo .SearchAppText-input {
+    height: 23px !important;
+    line-height: 28px !important;
+    box-sizing: border-box !important;
+}
+
+/* ================= RELOGIO (hora/data) ================= */
+
+/* #mge-clock e mantido pelo core (mge/system.js), display:none ate um
+   tema ligar - aqui so liga e estiliza. Desde que o core injeta como <td>
+   DENTRO da <table class="Taskbar">, ele ja herda o cancelamento de
+   invert do .Taskbar-container (nao precisa de invert proprio - uma
+   versao antiga tinha um, e isso causava DUPLA inversao/texto preto no
+   dark mode; nao reintroduzir). Vive dentro da <tr> flex, entao nao
+   precisa de position:fixed nem right/bottom calculados. align-items:
+   flex-end alinha as duas linhas pela direita (jeito real do Windows). */
+#mge-clock {
+    display: flex !important;
+    align-items: flex-end !important;
+    font-family: var(--win-fonte), sans-serif !important;
+    font-weight: 400 !important;
+    color: var(--win-texto) !important;
+    border-radius: 6px;
+    transition: background-color .15s ease;
+    padding: 3px 5px !important;
+    height: 25px !important;
+    width: 60px !important;
+    margin-right: -10px !important;
+    margin-left: -10px !important;
+}
+.mge-clock-hora,
+.mge-clock-data {
+    font-size: 12px;
+}
+
+#mge-clock:hover {
+    background: var(--win-hover) !important;
+}
+
+/* Reserva espaco so pra notificacao (que continua fixed, fora do fluxo da
+   table) - o relogio ja e <td> real, ocupa espaco sozinho. 40px cobre a
+   notificacao (28px + 4px right + folga) e alinha com o `right: 40px` do
+   popup de conta (secao abaixo). Um padding-right no .Taskbar-container
+   sozinho NAO funciona: a <table> nao e filha direta dele (o GWT insere
+   um wrapper `position:absolute;inset:0` no meio, cujo containing block
+   e a padding box do ancestral - spec do CSS, nao peculiaridade Sankhya)
+   - por isso o width vai no wrapper (`.Taskbar-container > div`) via
+   calc(), nao em padding no container. */
+.Taskbar-container > div {
+    width: calc(100% - 40px) !important;
+}
+
+/* ================= ICONE DE USUARIO (canto direito) ================= */
+
+/* O relogio ocupa esse canto agora - esconde a celula inteira (nao so o
+   icone, senao sobra vao vazio do gap do flex). */
+.Evo .Taskbar > tbody > tr > td:has(.icon-user-photo) {
+    display: none !important;
+}
+
+/* ================= ICONES DO SISTEMA (esconder sempre) ================= */
+
+/* Forca por CSS, incondicional - o switch nativo do popup ("Barra de
+   Abas") so salva uma preferencia por navegador; isto nao depende dela.
+   !important numa <td> escondida por :has() sempre vence um switch
+   futuro que reative via style inline sem !important. Lista inclui
+   icones que ja nascem display:none na maioria das bases (garante que
+   nenhuma condicao os traga de volta). icon-notification/icon-user-photo
+   ficam de fora - tratados em secoes proprias acima. */
+.Evo .Taskbar > tbody > tr > td:has(.icon-help),
+.Evo .Taskbar > tbody > tr > td:has(.icon-account-app),
+.Evo .Taskbar > tbody > tr > td:has(.icon-alert),
+.Evo .Taskbar > tbody > tr > td:has(.icon-tool),
+.Evo .Taskbar > tbody > tr > td:has(.icon-flag),
+.Evo .Taskbar > tbody > tr > td:has(.Taskbar-starIcon21),
+.Evo .Taskbar > tbody > tr > td:has(.Taskbar-timeClockIcon21) {
+    display: none !important;
+}
+
+/* ================= ABAS ABERTAS (AppItem) ================= */
+
+/* Aba nao toca mais o topo/base da barra - o GWT grava `height: 100%` inline
+   no <li>, precisa de !important pra vencer. */
+.ListItem.AppItem {
+    height: calc(100% - 6px) !important;
+    margin-top: 3px !important;
+}
+
+/* Wrapper interno sem classe (so o atributo data-nova-aba, marcado pelo
+   mge/system.js na injecao do botao de nova aba) - sem fundo nativo proprio.
+   Precisa vencer `html.mge-tab-neon .AppItem-selected>div` (mesmo elemento,
+   e o unico filho direto de .AppItem) - especificidade (0,2,2), 2 classes +
+   2 tipos (html, div). .AppItem.AppItem repete a classe pra (0,3,0), que
+   bate so no numero de classes (3 > 2), sem depender de tipo nenhum. */
+.AppItem.AppItem > [data-nova-aba] {
+    background: none !important;
+}
+
+/* Sem blur nas abas - so o fundo da barra inteira desfoca (secao
+   CONTAINER/FUNDO), o Windows real nao desfoca atras de cada icone. */
+.AppItem,
+.AppItem-selected {
+    backdrop-filter: none !important;
+}
+
+/* Hover neutro (cinza), a cor so aparece no indicador de app aberto. */
+.Evo .AppItem:hover {
+    background-color: var(--win-hover) !important;
+    border-radius: var(--win-raio) var(--win-raio) 0 0;
+}
+
+/* .AppItem-selected.AppItem-selected.AppItem-selected (0,3,0) pro box-shadow
+   vencer `html.mge-tab-neon .AppItem-selected` (0,2,1) - so 1 classe
+   (0,1,0) perdia (2 classes + 1 tipo do neon supera). */
+.AppItem-selected.AppItem-selected.AppItem-selected {
+    border-radius: var(--win-raio) var(--win-raio) 0 0;
+    background-color: var(--win-ativo-bg) !important;
+    box-shadow: none !important;
+}
+
+/* Mesma causa do container: cancela o "claro que devia ser escuro" nativo
+   por aba, no dark mode. Ordem base < hover < selected e proposital. */
+html.dark-theme .Evo .Taskbar .AppItem.AppItem {
+    background: transparent !important;
+}
+html.dark-theme .Evo .Taskbar .AppItem.AppItem:hover {
+    background: var(--win-hover) !important;
+}
+html.dark-theme .Evo .Taskbar .AppItem-selected.AppItem-selected.AppItem-selected {
+    background: var(--win-ativo-bg) !important;
+}
+
+/* Pilula central embaixo da aba ativa (indicador de app aberto do Windows
+   11) - reaproveita o ::after nativo que o core zera, com especificidade
+   maior pra vencer sem brigar com os estilos de aba (classico/sombra/neon). */
+.Evo .AppItem-selected.AppItem-selected::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    left: 50%;
+    bottom: 3px;
+    width: 16px;
+    height: 3px;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--win-accent);
+    box-shadow: 0 0 4px color-mix(in srgb, var(--win-accent) 60%, transparent);
+    pointer-events: none;
+}
+
+.AppItem-selected.AppItem-selected.AppItem-selected.AppItem-selected .gwt-Label.gwt-Label.gwt-Label,
+.AppItem-selected .AppItem-center {
+    color: var(--win-texto) !important;
+    font-weight: 600;
+}
+
+/* Especificidade 0,6,0, abaixo da ativa (0,7,0) de proposito - senao
+   empatam na aba ativa e quem decide vira ordem no arquivo. */
+.AppItem.AppItem.AppItem .gwt-Label.gwt-Label.gwt-Label {
+    color: var(--win-texto-dim) !important;
+    font-family: var(--win-fonte), sans-serif;
+}
+
+/* Tipografia do label da aba (ativa ou nao). !important sozinho nao bastava
+   pro font-weight: o core tem `html:not(.mge-tab-classico) .AppItem-center
+   .gwt-Label { font-weight: 700 !important }`, especificidade (0,3,1) - com
+   os dois !important, quem decide e especificidade, nao ordem no cascade.
+   .AppItem-center.AppItem-center + .gwt-Label.gwt-Label = 4 classes = (0,4,0)
+   - precisa ser MAIOR em classes (4 > 3), nao so igual: com 3 classes
+   (.AppItem-center.AppItem-center .gwt-Label, so 2+1) empataria em classes
+   e o seletor de tipo (`html`) do core desempataria a favor dele. */
+.AppItem-center.AppItem-center .gwt-Label.gwt-Label {
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    padding-top: 7px !important;
+    text-shadow: none !important;
+}
+
+/* Sem separador entre abas - display:none em vez de so neutralizar cor,
+   vence por ordem no cascade (injetado depois). */
+.Evo .AppItem:first-child .AppItem-leftSeparator,
+.Evo .AppItem .AppItem-rightSeparator {
+    display: none !important;
+}
+
+/* ================= ICONES DE ACAO (fechar / nova aba) ================= */
+
+[data-mge-nova-aba] {
+    color: var(--win-texto) !important;
+    opacity: .65 !important;
+    transition: opacity .12s ease, color .12s ease;
+}
+[data-mge-nova-aba]:hover {
+    color: var(--win-accent) !important;
+    opacity: 1 !important;
+}
+
+.AppItem .Taskbar-icon.icon-close {
+    top: 9px !important;
+}
+
+html.dark-theme .Evo .Taskbar .AppItem .Taskbar-icon.icon-close {
+    filter: brightness(0) invert(1) opacity(.7) !important;
+}
+html.dark-theme .Evo .Taskbar .AppItem .Taskbar-icon.icon-close:hover {
+    filter: brightness(0) invert(1) opacity(1) !important;
+}
+
+/* ================= MENU DE APLICATIVOS (icone de menu) ================= */
+
+/* Grade de atalhos (popup NATIVO do GWT). top:auto + bottom:46px (altura
+   da barra + respiro) ancora pela base, ja que o GWT calcula top inline
+   presumindo a barra em cima. max-height/overflow-y e teto de seguranca. */
+.gwt-PopupPanel.ListShortcutsMenuPopup {
+    top: auto !important;
+    bottom: 46px !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    box-shadow: none !important;
+}
+
+/* Cancela o invert(1) global do dark-theme - mesma tecnica repetida em
+   cada popup nativo desta folha (sem isto o fundo escuro escrito a mao
+   sai claro na tela). */
+html.dark-theme .ListShortcutsMenuPopup.ListShortcutsMenuPopup {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+/* Icones sao fotos/logos reais, nao glifo - mantem a cor original. */
+.ListShortcutsMenuPopup img {
+    filter: none !important;
+}
+.ListShortcutsMenuPopup .Shortcut-label {
+    color: var(--win-texto) !important;
+}
+
+.ListShortcutsMenuPopup-content .Shortcut-container:hover,
+.ListShortcutsMenuPopup-content .Shortcut-container:focus {
+    border: none !important;
+    background: var(--win-hover) !important;
+    border-radius: 6px;
+}
+
+/* Historico/recentes da busca - mesma causa/correcao do popup acima. */
+.gwt-PopupPanel.SearchAppHistoryPopup {
+    top: auto !important;
+    bottom: 46px !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    box-shadow: none !important;
+}
+html.dark-theme .SearchAppHistoryPopup.SearchAppHistoryPopup {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+.SearchAppHistoryPopup .gwt-MenuBar {
+    background: transparent !important;
+}
+.SearchAppHistoryPopup .gwt-MenuItem,
+.SearchAppHistoryPopup .gwt-MenuItem span {
+    color: var(--win-texto) !important;
+}
+.SearchAppHistoryPopup .gwt-MenuItem:hover,
+.SearchAppHistoryPopup .gwt-MenuItem-selected {
+    background: var(--win-hover) !important;
+}
+.SearchAppHistoryPopup .HistoryTitle {
+    color: var(--win-texto) !important;
+}
+
+/* Icones deste popup vivem fora de .Evo .Taskbar, so pegam a regra base
+   (nao a variante dark que inverte pra branco) - reaplica aqui, escopada. */
+html.dark-theme .SearchAppHistoryPopup .Taskbar-icon {
+    filter: brightness(0) invert(1) opacity(.75) !important;
+}
+
+/* Sugestoes da busca - mesma causa/correcao dos popups acima. */
+.gwt-PopupPanel.SimplePopup.SearchAppSuggestPopup {
+    top: auto !important;
+    bottom: 46px !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    box-shadow: none !important;
+}
+html.dark-theme .SearchAppSuggestPopup.SearchAppSuggestPopup {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+.SearchAppSuggestPopup .gwt-MenuBar {
+    background: transparent !important;
+}
+.SearchAppSuggestPopup .SuggestMenuList-descricaoItem,
+.SearchAppSuggestPopup .SuggestMenuList-categoryTitleItem {
+    color: var(--win-texto) !important;
+}
+.SearchAppSuggestPopup .SuggestMenuList-pathItem {
+    color: var(--win-texto-dim) !important;
+}
+.SearchAppSuggestPopup .gwt-MenuItem:hover,
+.SearchAppSuggestPopup .gwt-MenuItem-selected {
+    background: var(--win-hover) !important;
+}
+.SearchAppSuggestPopup .menuSeparatorInner {
+    background: var(--win-borda) !important;
+}
+.SearchAppSuggestPopup img {
+    filter: none !important;
+}
+
+/* Duas excecoes: glifo monocromatico (nao foto) - setinha de expandir
+   (identificada pelo opacity:0.5 inline) e icone de item customizado. */
+.SearchAppSuggestPopup .icon-customMenuItens,
+.SearchAppSuggestPopup img[style*="opacity: 0.5"] {
+    filter: brightness(0) invert(1) !important;
+}
+.SearchAppSuggestPopup .showMore-MenuItem b {
+    color: var(--win-texto) !important;
+}
+
+/* Terceira excecao (icone "Voltar", sem opacity:0.5) - mira pela LINHA,
+   ja que a <img> nao tem classe propria; o rotulo ao lado tem. */
+.SearchAppSuggestPopup .SuggestMenuList-categoryItem {
+    color: var(--win-texto) !important;
+}
+.SearchAppSuggestPopup tr:has(.SuggestMenuList-categoryItem) img {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* Menu de conta - o relogio (nao o icone de usuario, escondido) e quem
+   abre este popup agora, entao o `left` calculado pelo GWT nao bate; usa
+   left:auto + right:40px (mesmo valor da reserva do relogio) pra ancorar
+   pela borda direita em vez de um pixel fixo (quebraria em outra largura
+   de tela). left:auto e obrigatorio com left+right juntos, senao o
+   elemento estica pra preencher o vao. */
+.gwt-PopupPanel.ContextMenuPopup {
+    top: auto !important;
+    left: auto !important;
+    right: 40px !important;
+    bottom: 46px !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
+    box-shadow: none !important;
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+}
+html.dark-theme .ContextMenuPopup.ContextMenuPopup {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+/* Lista de opcoes e um .gwt-MenuBar com fundo branco opaco PROPRIO,
+   independente do .gwt-PopupPanel de fora - por isso precisa de regra
+   separada mesmo com o cabecalho ja corrigido acima. */
+.ContextMenuPopup .gwt-MenuBar {
+    background: transparent !important;
+}
+.ContextMenuPopup .gwt-MenuItem,
+.ContextMenuPopup .gwt-MenuItem span {
+    color: var(--win-texto) !important;
+}
+.ContextMenuPopup .gwt-MenuItem:hover,
+.ContextMenuPopup .gwt-MenuItem-selected {
+    background: var(--win-hover) !important;
+}
+.ContextMenuPopup .menuSeparatorInner {
+    background: var(--win-borda) !important;
+}
+
+/* Sobras que a regra generica nao alcanca: label solto fora dos
+   MenuItem, icone com filter inline gravado pelo proprio Sankhya, e dois
+   icones que sao sprite/imagem (nao glifo currentColor) - mesma tecnica
+   brightness(0)+invert(1) cobre os dois casos possiveis sem precisar
+   distinguir qual e. */
+.ContextMenuPopup td:has(> .header-account) {
+    background: var(--win-header-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    padding: 10px 0;
+}
+.ContextMenuPopup .header-account .gwt-Label {
+    color: var(--win-texto) !important;
+}
+.ContextMenuPopup #conectividade-injector-menu-item img,
+.ContextMenuPopup .icon-tab,
+.ContextMenuPopup .icon-puzzle {
+    filter: brightness(0) invert(1) !important;
+}
+
+.ContextMenuPopup .ContextMenuPopup-evo-content {
+    padding: 0 !important;
+}
+.ContextMenuPopup .gwt-MenuBar-vertical {
+    margin-top: 0 !important;
+}
+
+/* Painel de notificacoes - mesma causa/correcao dos popups acima; sem
+   correcao de `left` porque abre do icone real ja reposicionado (fixed). */
+.gwt-PopupPanel.SimplePopup.ContadorAvisoSistemaPopup {
+    top: auto !important;
+    bottom: 46px !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    box-shadow: none !important;
+}
+html.dark-theme .ContadorAvisoSistemaPopup.ContadorAvisoSistemaPopup {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+.ContadorAvisoSistemaPopup.ContadorAvisoSistemaPopup {
+    padding: 0 !important;
+}
+.ContadorAvisoSistemaPopup .noOutline > div > div {
+    padding: 0 !important;
+}
+
+/* O wrapper acima embrulha duas tabelas irmas (lista + "<< Voltar"/resposta)
+   - restaura o padding so na segunda, sem classe propria pra mirar melhor. */
+.ContadorAvisoSistemaPopup .noOutline > div > div > table:nth-of-type(2) {
+    padding: 10px !important;
+}
+
+/* Nome de classe OFUSCADO pelo CssResource do GWT - pode mudar numa
+   proxima build do Sankhya; se o fundo cinza voltar, recapturar no DevTools. */
+.GI-BUHVBFL {
+    background: transparent !important;
+}
+
+/* Cabecalho ("Caixa de entrada") - :has() mira a <td> de FORA (a unica
+   com <table>+button.gwt-Button filhos diretos), nao as duas de dentro. */
+.ContadorAvisoSistemaPopup td:has(> table button.gwt-Button) {
+    padding: 10px !important;
+    background: var(--win-header-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+}
+
+.ContadorAvisoSistemaPopup-itemVisited {
+    background-color: transparent !important;
+}
+
+/* Rodape ("Ver notificacoes mais antigas") - unica <td align=center> com
+   <div> como filho direto (as outras tem <img>), sem classe propria. */
+.ContadorAvisoSistemaPopup td[align="center"] > div {
+    padding: 10px 0 10px !important;
+    background: var(--win-header-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+}
+
+/* Herdava azul-marinho de regra nativa generica, ilegivel no fundo escuro. */
+.ContadorAvisoSistemaPopup .gwt-HTML {
+    color: white !important;
+}
+
+/* Outra classe ofuscada do GWT (ver aviso acima) - mira o atributo
+   __gwtcellbasedwidgetimpldispatchingfocus (framework, estavel) em vez
+   dela, ja que essa e gerada por build e pode mudar. */
+.ContadorAvisoSistemaPopup [__gwtcellbasedwidgetimpldispatchingfocus] {
+    background-color: transparent !important;
+}
+
+.ContadorAvisoSistemaPopup .separator {
+    display: none !important;
+}
+
+/* ================= POPUP DE CONFIGURACAO ================= */
+
+/* mge/system.js sempre abre pra baixo (rect.bottom+6, presume barra em
+   cima) - com a barra embaixo, top:auto+bottom:46px ancora pela base sem
+   precisar saber a altura real do popup (max-height nativo ja protege). */
+#mge-popup {
+    top: auto !important;
+    bottom: 46px !important;
+    background: var(--win-bg) !important;
+    border-color: var(--win-borda) !important;
+    color: var(--win-texto) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    transform-origin: bottom center;
+}
+#mge-popup.mge-dark {
+    background: var(--win-bg) !important;
+    border-color: var(--win-borda) !important;
+    color: var(--win-texto) !important;
+}
+
+/* Anima crescendo de baixo pra cima - redeclara o @keyframes do core
+   (injetado depois, vence por inteiro). */
+@keyframes mge-popup-in {
+    from { opacity: 0; transform: translateY(10px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0)     scale(1);  }
+}
+@keyframes mge-popup-out {
+    from { opacity: 1; transform: translateY(0)   scale(1);    }
+    to   { opacity: 0; transform: translateY(8px)  scale(.98); }
+}
+
+/* ================= BUSCA (SearchAppText) ================= */
+
+.Evo .SearchAppText.SearchAppText {
+    background-color: var(--win-hover) !important;
+    border: 1px solid var(--win-borda) !important;
+    border-radius: 999px !important;
+    backdrop-filter: blur(8px);
+}
+.Evo .SearchAppText-focused.SearchAppText-focused,
+.SearchAppText:focus-within {
+    background-color: var(--win-ativo-bg) !important;
+    border-radius: 999px !important;
+}
+.SearchAppText-input {
+    background: transparent;
+    color: var(--win-texto);
+    caret-color: var(--win-accent);
+    font-family: var(--win-fonte), sans-serif;
+}
+.SearchAppText-input::placeholder {
+    color: var(--win-texto-dim);
+}
+
+/* ================= MENU DE APLICATIVOS (busca completa) ================= */
+
+/* Modal de busca completa - so :has(.SearchPopup-searchPanel) diferencia
+   do ContadorAvisoSistemaPopup (mesma classe base .gwt-PopupPanel.SimplePopup). */
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) {
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+}
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) div:has(> .SearchPopup-searchPanel) {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+html.dark-theme .gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+.SearchPopup-searchPanel {
+    background: var(--win-header-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+}
+.SimpleSearchText,
+.SimpleSearchText-input {
+    background: transparent !important;
+    color: var(--win-texto) !important;
+    font-family: var(--win-fonte), sans-serif;
+    outline: none !important;
+}
+
+/* Lupa nativa vinha numa <td> propria com vao grande; zera a coluna e
+   reposiciona em absolute sobre a pilula (o painel ja e absolute inline). */
+.SearchPopup-searchPanel > tbody > tr > td:first-child {
+    width: 0 !important;
+    padding: 0 !important;
+}
+.SearchPopup-searchIcon {
+    position: absolute !important;
+    left: 14px;
+    margin-left: 6px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.6);
+    transform-origin: left center;
+    z-index: 2;
+    pointer-events: none;
+}
+.SimpleSearchText-input {
+    padding-left: 34px !important;
+}
+.SimpleSearchText-input:focus {
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+.SimpleSearchText {
+    border: 1px solid var(--win-borda) !important;
+    border-top: 1px solid var(--win-borda) !important;
+    border-radius: 999px !important;
+}
+.SimpleSearchText {
+    padding: 0 !important;
+    width: 565px !important;
+}
+.SearchPopup-searchPanel img[src*="clear.cache.gif"] {
+    display: none !important;
+}
+.separator {
+    background: var(--win-borda) !important;
+    margin-top: 0 !important;
+}
+
+/* Cadeia de <div> anonimos entre o wrapper nativo e a lista - sem
+   seletor nativo pra mirar direto, forca transparente em cada nivel. */
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) .noOutline,
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) .noOutline > div,
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) .noOutline > div > div,
+.gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) .CategoryMenuList {
+    background: transparent !important;
+}
+
+.MenuList-descricaoItem {
+    color: var(--win-texto) !important;
+}
+.MenuList-pathItem {
+    color: var(--win-texto-dim) !important;
+}
+.CategoryMenuList img {
+    filter: none !important;
+}
+.item-CellListItem:hover {
+    background: var(--win-hover) !important;
+}
+
+/* ================= CARD DE GADGET NO DASHBOARD ================= */
+
+/* .desktop-card e o quadrado de um gadget de BI na area de trabalho - CSS
+   aplicado de fora, sem relacao com o jsnk nunca ser injetado no card.
+   html.dark-theme nao pegou aqui na pratica (documento diferente) -
+   fundo escuro incondicional resolve os dois modos sem depender disso. */
+.desktop-card.desktop-card {
+    box-shadow: none !important;
+    border-radius: 10px !important;
+    overflow: hidden;
+}
+.desktop-card-header.desktop-card-header {
+    background: transparent none !important;
+}

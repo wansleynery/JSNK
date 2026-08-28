@@ -129,7 +129,6 @@ html.dark-theme .Evo .Taskbar.Taskbar.Taskbar {
         inset 0 -2px 0 var(--hw-accent),
         inset 0 -3px 4px -2px color-mix(in srgb, var(--hw-accent) 45%, transparent);
     backdrop-filter: blur(3px) !important;
-    -webkit-backdrop-filter: blur(3px) !important;
 }
 
 .AppItem-selected.AppItem-selected.AppItem-selected.AppItem-selected .gwt-Label.gwt-Label.gwt-Label,

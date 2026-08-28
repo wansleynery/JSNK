@@ -130,7 +130,6 @@ html.dark-theme .Evo .Taskbar.Taskbar.Taskbar {
        malha hexagonal atrás, o blur forte borra o texto do título junto
        com o fundo. Reduzido só aqui (não é o padrão nos outros temas). */
     backdrop-filter: blur(3px) !important;
-    -webkit-backdrop-filter: blur(3px) !important;
 }
 
 .AppItem-selected.AppItem-selected.AppItem-selected.AppItem-selected .gwt-Label.gwt-Label.gwt-Label,

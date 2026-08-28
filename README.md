@@ -4,7 +4,7 @@
 > entre devs Sankhya ficou mais difícil. Comunidade (não oficial) no Discord:
 > **<https://discord.gg/ke8DmDKdk7>** — bons códigos, amigo!
 
-**Versão atual:** 49
+**Versão atual:** 51
 
 ---
 
@@ -139,6 +139,33 @@ temas/natal.css       tema sazonal
 Cada arquivo é autocontido — não dependem uns dos outros nem de nada fora do
 próprio `.css`.
 
+### Criando seu próprio tema
+
+Qualquer `.css` funciona — arraste no card e pronto. O único contrato é
+opcional: um tema pode declarar metadados num comentário, no formato
+`$CHAVE: valor`, de preferência numa linha isolada no topo do arquivo (é o que
+`temas/win11.css` faz). Hoje só existe uma chave reconhecida:
+
+```css
+/* $VERSAO_REQUERIDA: N */
+```
+
+`VERSAO_REQUERIDA` declara a versão mínima do componente que o tema precisa
+pra funcionar por completo — útil quando o tema depende de um elemento que só
+existe a partir de uma certa versão (o `win11.css` usa o relógio da barra de
+tarefas, por exemplo; veja o cabeçalho do arquivo pro número real em vigor).
+Sem essa linha, o tema não tem nenhuma exigência e funciona em qualquer
+versão. Com ela:
+
+- **Ao instalar** (arraste no card): se a base estiver numa versão mais
+  antiga que a exigida, o upload é **bloqueado**, com aviso de qual versão o
+  tema precisa.
+- **Ao aplicar** (escolher o tema no popup, quando ele já está instalado):
+  a checagem só **avisa**, sem bloquear — cobre o caso de um tema que já
+  estava no repositório antes de existir uma base rodando uma versão velha o
+  bastante pra ficar incompatível. O tema aplica normalmente; só a parte que
+  depende do recurso novo é que fica quebrada até a base atualizar.
+
 ## Políticas de administrador
 
 Um admin Sankhya pode restringir a personalização por **usuário** (`TSIUSU`)
@@ -197,6 +224,16 @@ cache.
   propósito.
 - Telas antigas (Angular) e as novas (React sobre web components `snk-*`/`ez-*`)
   são ambas suportadas.
+
+## Bugs conhecidos
+
+- **Notificação abre com o conteúdo vazio**: com o JSNK ativo, clicar numa
+  notificação da barra de tarefas pra ver o detalhe abre o popup nativo sem
+  conteúdo — acontece com qualquer notificação, não é de um tipo específico.
+  Causa ainda não identificada. Contorno enquanto não há correção: pausar o
+  JSNK pelo switch do próprio card antes de abrir a notificação, ou conferir
+  numa sessão `0 - SUP` (não recebe nenhuma injeção — ver "Requisitos e
+  limitações" acima).
 
 ## Licença e crédito
 

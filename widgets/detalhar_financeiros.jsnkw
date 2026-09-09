@@ -1,0 +1,35 @@
+/*
+ * Widget de exemplo — mostra os registros da tela de Movimentação
+ * Financeira, também via `dados()` (sem consulta própria — ver
+ * `jsnk-api.md`'s bullet do comando `dados`). Diferente de
+ * `detalhar_marcas.jsnkw`, usa `registros.dados` (TODOS os registros já
+ * carregados na tela), não `registros.selecionados` — aqui o widget é um
+ * resumo geral da tela, não um detalhe do que está marcado.
+ *
+ * `$TELA` restringe a receita à tela de Movimentação Financeira
+ * (`resourceId` `br.com.sankhya.fin.cad.movimentacaoFinanceira`) pelo
+ * mesmo motivo do widget de Marcas: sem essa trava, `dados()` tentaria ler
+ * a entidade `Financeiro` de uma tela que não a tem.
+ *
+ * `linha.CODPARC?.label ?? linha.CODPARC` cobre os dois formatos que um
+ * campo de chave estrangeira pode chegar nesta leitura: um objeto
+ * `{value, label}` (o comum nas telas novas/React) ou o valor cru — sem o
+ * `?.`/`??`, um `CODPARC` que já viesse como número quebraria tentando ler
+ * `.label` de algo que não é objeto.
+ */
+
+/* $TITULO:  Detalhar Financeiros */
+/* $TELA:    Movimentação Financeira-br.com.sankhya.fin.cad.movimentacaoFinanceira */
+/* $ALTURA:  500px */
+/* $LARGURA: 400px */
+dados ({ entidade: 'Financeiro' }).then (registros => {
+    listar (
+        registros.dados.map (linha => ({
+            NUFIN:    linha.NUFIN,
+            Parcela:  linha.DESDOBRAMENTO,
+            Valor:    linha.VLRDESDOB,
+            Parceiro: linha.CODPARC?.label ?? linha.CODPARC,
+            Nota:     linha.NUNOTA,
+        }))
+    );
+})

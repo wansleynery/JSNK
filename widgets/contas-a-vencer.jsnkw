@@ -1,0 +1,41 @@
+/*
+ * Widget de exemplo — abre o Componente BI HTML5 "Contas a Vencer"
+ * (dist/bi/contas-a-vencer/) dentro do próprio painel do widget, via
+ * <iframe> (comando `tela`). Mostra que um widget não precisa se limitar
+ * ao que o interpretador da minibarra sabe desenhar sozinho (tabela,
+ * filtro) — também pode embutir uma tela BI de verdade, com HTML/CSS/JS
+ * próprios, sem passar pela receita interpretada nenhuma vez.
+ *
+ * Pré-requisito: instalar dist/bi/contas-a-vencer/index.jsp como
+ * Componente BI (HTML5) na sua base — o Sankhya só aceita `.zip` pra esse
+ * tipo de componente, então zipe o `index.jsp` mesmo sendo um arquivo só
+ * antes de cadastrar (`entryPoint` nem precisa ser `index.jsp` de
+ * propósito, `tela` descobre sozinho qual é, direto do cadastro do
+ * componente — ver `dist/bi/contas-a-vencer/README.md`).
+ *
+ * `251` abaixo é o nuGdg desse componente NESTA base de exemplo — é um
+ * número POR BASE (o mesmo componente tem um nuGdg diferente em cada
+ * instalação), então quem for reaproveitar este arquivo numa base
+ * diferente troca esse número antes de subir. Fica CRAVADO no arquivo, de
+ * propósito: esta receita abre UM Componente BI específico, então não faz
+ * sentido — e não é oferecido — deixar o usuário final escolher outro em
+ * tempo de execução.
+ *
+ * O `filtrar` de `CODEMP` NÃO é exigido por `tela` — está aqui só pra
+ * mostrar que o 2º argumento (os parâmetros repassados por URL pro
+ * Componente BI) pode vir de um filtro editável como qualquer outro dado
+ * de receita; um widget mais simples poderia chamar `tela (251)` sozinho,
+ * sem filtro nenhum. Ver `dist/bi/contas-a-vencer/index.jsp` pra como o
+ * `CODEMP` é lido do outro lado.
+ */
+
+/* $TITULO:    Contas a Vencer */
+/* $DESCRICAO: Abre o painel de contas a pagar/receber (Componente BI) */
+/* $LARGURA:   440px */
+/* $ALTURA:    620px */
+
+filtrar ([
+    { campo: "CODEMP", label: "Cód. Empresa", tipo: Number, valor: 1 },
+]).then (filtros =>
+    tela (251, { CODEMP: filtros [0].valor })
+)

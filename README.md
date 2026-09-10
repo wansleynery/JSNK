@@ -13,7 +13,7 @@
   <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
 </p>
 
-**Versão atual:** 88
+**Versão atual:** 89
 
 O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
@@ -126,8 +126,8 @@ barra de tarefas assim que o loader instala (a menos que um admin o esconda — 
   compacta, substituída por imagem própria ou oculta) e estilo da pesquisa
   (padrão ou Spotlight, estilo macOS).
 - **Barra de Abas**: botões nativos da barra de tarefas (menu, ajuda,
-  notificações, Aplicações Sankhya) e estilo visual das abas (linear, quadro,
-  clássico, neon).
+  notificações, Aplicações Sankhya, IA Copilot/Bia) e estilo visual das abas
+  (linear, quadro, clássico, neon).
 - **Popup**: tema visual dos painéis laterais que os scripts de tela criam —
   `glassify` (vidro translucido + accent) ou `metal` (degradê metálico).
 - **Temas**: tema customizado (CSS) da barra de tarefas — veja a seção
@@ -349,6 +349,8 @@ Troque experiências com outros desenvolvedores Sankhya na [comunidade não ofic
 ## Agradecimentos
 Um agradecimento especial a [Maycon Gehlen](https://www.linkedin.com/in/maycon-gehlen) com o processo
 de injeção via NGINX e tema escuro.
+Um agradecimento também a [Wanessa Brito](https://github.com/wanessabrito), que sugeriu e propôs o
+toggle pra ocultar a IA Copilot (Bia) na barra de tarefas.
 Um agradecimento também a todos da comunidade em geral que ajudaram em vários pontos que tornaram
 essa funcionalidade possível.
 

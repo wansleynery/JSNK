@@ -13,7 +13,7 @@
   <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
 </p>
 
-**Versão atual:** 86
+**Versão atual:** 87
 
 O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
@@ -79,12 +79,12 @@ O painel exibe logo ASCII, status, versão, tempo de atividade, tamanho e crédi
 | --- | --- |
 | **Pausar/retomar** | O switch em `status` pausa a injeção e recarrega a janela. Ao religar, reinstala as customizações. Útil para comparar com a interface original. |
 | **Indicador de versão** | Vermelho indica uma versão mais nova no GitHub. A consulta depende da internet do navegador; sem conexão, mantém a cor padrão e o JSNK continua funcionando. |
-| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` mais recente e reinstala o componente para **todos os usuários da base**, após confirmação. |
+| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` **e os quatro arquivos de `scripts/`** mais recentes do GitHub e reinstala tudo para **todos os usuários da base**, após confirmação — nunca uma combinação de versões diferentes entre componente e scripts. |
 
 ## Atualização e cache
 
 > [!WARNING]
-> O botão de atualizar e o arraste de `.zip` no card atualizam **somente o componente**. Quando uma versão também altera os quatro arquivos de `scripts/`, envie-os manualmente para `Repo://scripts/`. Mantenha componente e scripts da mesma versão.
+> Arrastar um `.zip` local para o card atualiza **somente o componente** — os quatro arquivos de `scripts/` continuam exigindo envio manual (ou arraste deles também) para `Repo://scripts/`. Só o botão **Atualizar (⇪)** cobre os dois juntos, porque ele busca ambos do mesmo commit no GitHub.
 
 Os arquivos de customização podem ser substituídos individualmente, sem reinstalar o componente a cada edição. Nas atualizações de versão, use o `jsnk.zip` correspondente: o loader inclui `&v=<VERSAO>` nas URLs para invalidar o cache.
 

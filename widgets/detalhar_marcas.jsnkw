@@ -1,0 +1,28 @@
+/*
+ * Widget de exemplo — mostra os registros SELECIONADOS na grade da tela de
+ * Marcas, sem fazer nenhuma consulta nova: `dados()` lê direto do
+ * Dataset/DataUnit que a própria tela já carregou (ver `jsnk-api.md`'s
+ * bullet do comando `dados`). Não usa `filtrar` nem `consultar` — o
+ * conteúdo do painel é só um espelho do que já está marcado na grade.
+ *
+ * `$TELA` restringe a receita à tela de Marcas (`resourceId`
+ * `br.com.sankhya.core.cad.marcas`): abrir o widget em qualquer outra tela
+ * mostra o aviso "Este widget só funciona na tela de Marcas" em vez de
+ * rodar `dados()` contra a tela errada — sem essa restrição o widget
+ * tentaria ler seleção de uma tela que nem tem a entidade `MarcaProduto`.
+ *
+ * `registros.selecionados` traz só as linhas marcadas (nenhuma seleção =
+ * array vazio, o painel mostra "Nenhum registro." via `listar`); o `.map`
+ * monta uma única coluna (`Marca`) concatenando código e descrição, já que
+ * a tabela do widget é pra ser pequena e densa, não uma cópia da grade
+ * inteira.
+ */
+
+/* $TITULO:  Detalhar Marcas */
+/* $TELA:    Marcas-br.com.sankhya.core.cad.marcas */
+/* $LARGURA: 200px */
+dados ({ entidade: 'MarcaProduto' }).then (registros => {
+    listar (
+        registros.selecionados.map (linha => ({ Marca: `${linha.CODIGO}. ${linha.DESCRICAO}` }))
+    );
+})

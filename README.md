@@ -1,32 +1,99 @@
-# JSNK
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/02c568a9-e571-489b-9f72-963a4db4e0fc" alt="JSNK — personalização para o Sankhya" width="320">
+</p>
 
-> 💬 **Se sente meio esquecido por aí?** Desde a migração da plataforma oficial, o diálogo
-> entre devs Sankhya ficou mais difícil. Comunidade (não oficial) no Discord:
-> **<https://discord.gg/ke8DmDKdk7>** — bons códigos, amigo!
+<h1 align="center">JSNK</h1>
+<p align="center"><strong>Seu Sankhya, do seu jeito.</strong><br>Personalização visual e funcional com JavaScript e CSS, sem acessar o servidor.</p>
 
-**Versão atual:** 51
+<p align="center">
+  <a href="#instalação">Instalação</a> ·
+  <a href="https://youtu.be/LCmRlpRc9nA">Assistir ao tutorial</a> ·
+  <a href="temas/">Temas</a> ·
+  <a href="widgets/">Widgets</a> ·
+  <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
+</p>
 
----
+**Versão atual:** 88
 
-Customização visual e funcional do Sankhya por **injeção de scripts**, sem tocar no
-servidor.
+O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
-Personalizar o Sankhya por script normalmente exige acesso ao servidor de aplicação
-para injetar um `loader.js` em toda página e servir os arquivos de customização. O
-JSNK dispensa isso: ele se instala como um **componente do próprio Sankhya** e
-carrega os arquivos do **repositório de arquivos do Sankhya**. Funciona em qualquer
-base, inclusive nas hospedadas pela Sankhya, onde você não tem o servidor.
+| Recurso | O que você pode fazer |
+| --- | --- |
+| Aparência | Ajustar cores, modo escuro, logo, abas e pesquisa. |
+| Temas | Instalar arquivos CSS arrastando para o card. |
+| Widgets | Abrir tabelas, filtros e telas de BI em painéis laterais. |
+| Preferências | Salvar configurações por usuário, entre dispositivos. |
+| Administração | Definir políticas de personalização por usuário ou grupo. |
 
-São duas peças independentes:
+## Instalação
 
-1. **Componente de lógica** — um único arquivo, `jsnk.jsp`, entregue em
-   `jsnk.zip`. Adicionado ao dashboard do usuário como **card**, carrega uma vez e
-   passa a aplicar as customizações em todas as telas.
-2. **Arquivos de customização** — ficam no repositório de arquivos do Sankhya, em
-   `Repo://scripts/`, servidos pelo `download.mge`. São atualizados arquivo por
-   arquivo pela própria UI do Sankhya, **sem redeploy do componente**.
+### Assista ao passo a passo
 
-## O que tem neste repositório
+<p align="center">
+  <a href="https://youtu.be/LCmRlpRc9nA">
+    <img src="https://img.youtube.com/vi/LCmRlpRc9nA/hqdefault.jpg" alt="Assistir ao vídeo: instalação do JSNK no Sankhya, passo a passo" width="640">
+  </a>
+</p>
+
+**▶ [Assistir à instalação no YouTube](https://youtu.be/LCmRlpRc9nA)**
+
+### 1. Prepare os arquivos
+
+Baixe o repositório em **Code → Download ZIP** e extraia os arquivos. Para a instalação básica, você precisa de `jsnk.zip` e da pasta `scripts/`. As pastas `temas/`, `widgets/` e `bi/` são opcionais.
+
+### 2. Cadastre o componente BI
+
+No Sankhya, cadastre ou atualize um **Componente BI (HTML5)** com o arquivo `jsnk.zip` e defina o **entryPoint** como `jsnk.jsp`. O pacote não depende de um `nuGdg` fixo: não é necessário editar esse identificador para cada base.
+
+### 3. Libere o acesso e adicione o card
+
+Na tela **Acessos**, libere o componente para os usuários ou grupos que vão utilizar o JSNK. Depois, adicione o card ao **dashboard/portal inicial** desses usuários. A liberação por grupo facilita a manutenção dos acessos.
+
+> [!IMPORTANT]
+> O card instala o loader. Sem acesso liberado e sem o card no dashboard, as customizações não são carregadas. O usuário **`0 - SUP` não recebe customizações**, pois não aceita cards no dashboard.
+
+### 4. Envie os scripts
+
+No repositório de arquivos do Sankhya, envie o conteúdo de `scripts/` para `Repo://scripts/`, preservando **todos os nomes e subpastas**:
+
+```text
+scripts/global.css      → Repo://scripts/global.css
+scripts/global.js       → Repo://scripts/global.js
+scripts/mge/system.css  → Repo://scripts/mge/system.css
+scripts/mge/system.js   → Repo://scripts/mge/system.js
+```
+
+Os arquivos já estão minificados. Não acrescente `.min` nem renomeie os arquivos: o loader depende desses caminhos.
+
+### 5. Confira a instalação
+
+- Entre com um usuário autorizado, diferente de `0 - SUP`.
+- Abra o dashboard e confira se o card do JSNK aparece com o status ativo.
+- Abra o **botão mágico** na barra de tarefas para ajustar a aparência, caso ele não esteja oculto por uma política de administrador.
+
+## O card do JSNK
+
+O painel exibe logo ASCII, status, versão, tempo de atividade, tamanho e créditos. Ele acompanha a cor de destaque escolhida pelo usuário e se adapta aos tamanhos de card do Sankhya.
+
+| Controle | Comportamento |
+| --- | --- |
+| **Pausar/retomar** | O switch em `status` pausa a injeção e recarrega a janela. Ao religar, reinstala as customizações. Útil para comparar com a interface original. |
+| **Indicador de versão** | Vermelho indica uma versão mais nova no GitHub. A consulta depende da internet do navegador; sem conexão, mantém a cor padrão e o JSNK continua funcionando. |
+| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` **e os quatro arquivos de `scripts/`** mais recentes do GitHub e reinstala tudo para **todos os usuários da base**, após confirmação — nunca uma combinação de versões diferentes entre componente e scripts. |
+
+## Atualização e cache
+
+> [!WARNING]
+> Arrastar um `.zip` local para o card atualiza **somente o componente** — os quatro arquivos de `scripts/` continuam exigindo envio manual (ou arraste deles também) para `Repo://scripts/`. Só o botão **Atualizar (⇪)** cobre os dois juntos, porque ele busca ambos do mesmo commit no GitHub.
+
+Os arquivos de customização podem ser substituídos individualmente, sem reinstalar o componente a cada edição. Nas atualizações de versão, use o `jsnk.zip` correspondente: o loader inclui `&v=<VERSAO>` nas URLs para invalidar o cache.
+
+<details>
+<summary><strong>Como o carregamento funciona e o que há no repositório</strong></summary>
+
+O componente `jsnk.jsp`, dentro de `jsnk.zip`, instala o loader na sessão do usuário. Os arquivos de customização são servidos pelo `download.mge`. O caminho de cada arquivo acompanha o caminho da tela; arquivos `global.css` e `global.js` são aplicados por nível de pasta, em cascata. O `global.css` da raiz alcança todos os módulos.
+
+### Estrutura dos arquivos
 
 ```
 jsnk.zip     ← sobe como Componente BI (HTML5), entryPoint = jsnk.jsp
@@ -36,6 +103,8 @@ scripts/     ← sobe para Repo://scripts/, mantendo a árvore e os nomes
   mge/system.css  barra de tarefas e abas do shell
   mge/system.js   tema, logo, busca rápida e popup de configurações
 temas/       ← galeria de temas prontos (opcional — ver "Temas customizados")
+widgets/     ← galeria de widgets prontos (opcional — ver "Widgets")
+bi/          ← exemplos de Componentes BI standalone, usados por alguns widgets
 ```
 
 Os arquivos estão minificados, prontos para uso. Os nomes **não** levam `.min` de
@@ -44,57 +113,7 @@ propósito: o loader busca `mge/system.js`, então renomear quebra a resolução
 Esta versão traz a **customização geral da plataforma** — o que vale para o sistema
 inteiro (tema, shell, comportamentos globais).
 
-## Deploy
-
-### 1. Componente de lógica (uma vez, e a cada nova versão)
-
-1. No Sankhya, cadastre/atualize o **Componente BI (HTML5)** com o `jsnk.zip`,
-   `entryPoint = jsnk.jsp`.
-2. **Libere o acesso ao card** na tela **Acessos**, para os usuários ou grupos que
-   devem receber a customização. Sem essa liberação o card não aparece para o
-   usuário, e como é o card que instala o loader, nada é aplicado — é a causa mais
-   comum de "instalei e não mudou nada". Liberar por **grupo** é o caminho prático:
-   a customização passa a valer para quem entra no grupo, sem repetir o processo por
-   usuário.
-3. Adicione o componente como **card no dashboard/portal inicial** dos usuários.
-   É o card que instala o loader — sem ele, nada é aplicado.
-4. O componente não depende de `nuGdg` próprio: o mesmo zip funciona em qualquer
-   base, sem editar nada.
-
-O card não fica em branco. Ele mostra um painel estilo *neofetch* (logo ASCII +
-`status`, `versao`, `uptime`, `tamanho` e `creditos`, mais a paleta da cor de
-destaque), usa o accent escolhido pelo usuário e cabe em qualquer uma das nove
-resoluções de card do Sankhya (190/390/590 × 174/265/448) sem rolagem. A linha
-`creditos` leva dois links, para o autor e para este repositório — útil para quem
-encontrar o card numa base e quiser saber o que é.
-
-A linha `versao` mostra uma bolinha (cor de destaque = tudo certo, vermelha =
-existe uma versão mais nova aqui no GitHub). Essa checagem roda no **navegador do
-usuário** (bate num CDN público, fora da rede do Sankhya) — **se a máquina/rede
-de quem está com o navegador aberto não tiver saída à internet liberada** (VPN
-corporativa, firewall restritivo), ela simplesmente falha em silêncio: a bolinha
-fica na cor de destaque (padrão "sem novidade"), sem erro no console e sem
-atrasar ou travar nada, porque o resto do card e do loader não depende dela em
-nada. Não há como saber que existe uma versão nova sem essa
-saída à internet, mas também não há nenhum efeito colateral por não ter.
-
-### 2. Arquivos de customização
-
-Suba o conteúdo de `scripts/` para `Repo://scripts/`, preservando a estrutura de
-pastas e os nomes:
-
-```
-scripts/global.css      →  Repo://scripts/global.css
-scripts/mge/system.js   →  Repo://scripts/mge/system.js
-```
-
-O caminho de cada arquivo espelha o caminho da tela no Sankhya, e o loader aplica um
-`global.css`/`global.js` por nível de pasta, em cascata. O `global.css` da raiz é o
-único que alcança todos os módulos — é por isso que o tema (cor de destaque e modo
-escuro) mora nele.
-
-Atualizar um arquivo de customização **não** exige mexer no componente — é a
-vantagem de separar as duas peças.
+</details>
 
 ## Personalização pelo usuário
 
@@ -113,6 +132,9 @@ barra de tarefas assim que o loader instala (a menos que um admin o esconda — 
   `glassify` (vidro translucido + accent) ou `metal` (degradê metálico).
 - **Temas**: tema customizado (CSS) da barra de tarefas — veja a seção
   seguinte.
+- **Widgets**: habilita/desabilita a minibarra de widgets e escolhe o lado
+  (esquerda ou direita) em que ela e os painéis abertos flutuam — veja
+  "Widgets" mais abaixo.
 
 ## Temas customizados
 
@@ -139,7 +161,9 @@ temas/natal.css       tema sazonal
 Cada arquivo é autocontido — não dependem uns dos outros nem de nada fora do
 próprio `.css`.
 
-### Criando seu próprio tema
+<details>
+<summary><strong>Criando seu próprio tema</strong></summary>
+
 
 Qualquer `.css` funciona — arraste no card e pronto. O único contrato é
 opcional: um tema pode declarar metadados num comentário, no formato
@@ -166,7 +190,86 @@ versão. Com ela:
   bastante pra ficar incompatível. O tema aplica normalmente; só a parte que
   depende do recurso novo é que fica quebrada até a base atualizar.
 
+</details>
+
+## Widgets
+
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/477b26af-4747-4c77-9945-72669c3dc0cd">
+    <img src="https://github.com/user-attachments/assets/477b26af-4747-4c77-9945-72669c3dc0cd" alt="Demonstração dos widgets Estoque Atual e Contas a Vencer no Sankhya personalizado com JSNK" width="1000">
+  </a>
+</p>
+<p align="center"><em>Estoque Atual e Contas a Vencer no mesmo ambiente personalizado com JSNK. Imagem demonstrativa com dados ilustrativos; clique para ampliar.</em></p>
+
+Uma minibarra (`#jsnk-minibar`) aparece logo abaixo da barra de tarefas, com
+uma pílula para cada arquivo instalado em `Repo://widgets/`. Clicar numa
+pílula abre um painel lateral com o conteúdo do widget — tabela, filtro
+interativo, ou até uma tela de BI inteira embutida.
+
+Assim como os temas, um arquivo `.jsnkw` sobe **arrastando no card** e fica
+disponível pra base inteira, sem precisar de nenhum redeploy do componente.
+
+Este repositório inclui uma pequena **galeria de widgets prontos** em
+`widgets/`:
+
+```
+widgets/estoque.jsnkw                filtro (empresa/tipo/ativo) + tabela de estoque
+widgets/contas-a-vencer.jsnkw        abre a tela de BI "Contas a Vencer" (dist/bi/) embutida no painel
+widgets/detalhar_marcas.jsnkw        tabela com os registros selecionados na tela de Marcas
+widgets/detalhar_financeiros.jsnkw   tabela com os registros selecionados na tela de Financeiro
+```
+
+No popup de configurações, a seção **Widgets** deixa **habilitar/desabilitar
+a barra inteira** e escolher o lado de **flutuação** (esquerda ou direita) em
+que a minibarra e os painéis abertos ficam ancorados.
+
+<details>
+<summary><strong>Desenvolvimento de widgets: comandos e sintaxe suportada</strong></summary>
+
+### Interpretador de widgets
+
+O arquivo `.jsnkw` é texto simples, numa sintaxe parecida com JavaScript
+(arrow functions, `.then()`, template strings), mas quem executa é um
+interpretador próprio, com um vocabulário fixo de comandos — nunca `eval`,
+nunca acesso a um objeto/global real do navegador. Um widget só consegue
+fazer o que os comandos abaixo permitem, nunca lógica livre.
+
+Isso tem uma consequência prática: **nem toda sintaxe de JavaScript
+funciona, mesmo parecendo válida.** Funcionam arrow functions de qualquer
+número de parâmetros, `const`/`let`, `return`, template strings,
+operadores aritméticos/comparação/lógicos, `? :` e `await` (tratado como
+no-op). **Não funcionam** `if`/`for`/`while`, declaração de `function`/
+`class`, desestruturação/spread e atribuição (`x = y`) — um widget usa
+`.then()`/arrow/`? :` pra qualquer decisão condicional, em vez de `if`. Uma
+construção não suportada não falha em silêncio: o painel mostra
+"Widget com erro: ..." em vez do widget simplesmente não fazer nada.
+
+### Criando seu próprio widget
+
+Um comentário no topo do arquivo declara o título (e, opcionalmente,
+descrição, largura, altura ou uma tela específica em que o widget funciona):
+
+```js
+/* $TITULO: Meu widget */
+consultar (() => `SELECT ... `)
+  .then (linhas => listar (linhas))
+```
+
+Comandos disponíveis: `consultar` (roda uma consulta `SELECT`), `filtrar`
+(campos editáveis que alimentam a consulta — número, texto, booleano, data,
+uma lista fixa de opções, ou busca por entidade com autocomplete via
+`busca: texto => sql`), `listar` (desenha o resultado como tabela), `dados`
+(lê os registros selecionados na tela atual, sem consulta nova) e `tela`
+(embute uma tela de BI inteira via iframe). Veja os arquivos da galeria
+acima para exemplos completos.
+
+</details>
+
 ## Políticas de administrador
+
+<details>
+<summary><strong>Consultar regras e campos de configuração</strong></summary>
+
 
 Um admin Sankhya pode restringir a personalização por **usuário** (`TSIUSU`)
 e/ou **grupo** (`TSIGRU`), cadastrando campos `AD_JSNK_*` opcionais nessas
@@ -176,36 +279,32 @@ permissão, campo não cadastrado), o JSNK assume "sem nenhuma restrição" —
 **fail-open** deliberado, porque isto é uma feature de personalização, não uma
 fronteira de segurança.
 
-| Campo | Tipo | Efeito |
-| --- | --- | --- |
-| `AD_JSNK_ATIVO` | S/N | JSNK ativado para este usuário/grupo (kill-switch: reverte tudo ao padrão nativo) |
-| `AD_JSNK_INIBEPOPUP` | S/N | Esconde o botão mágico inteiro (sem desativar o JSNK) |
-| `AD_JSNK_INIBEVERCONFG` | S/N | Esconde a seção "Aparência" |
-| `AD_JSNK_INIBEMUDARCOR` | S/N | Bloqueia trocar a cor de destaque |
-| `AD_JSNK_ACCENTPADRAO` | hex | Cor de destaque forçada |
-| `AD_JSNK_INIBEMUDARDARK` | S/N | Bloqueia alternar o modo escuro |
-| `AD_JSNK_DARKPADINICIAL` | S/N | Modo escuro já ligado no primeiro acesso |
-| `AD_JSNK_INIBEMUDARABA` | S/N | Bloqueia trocar o estilo da aba |
-| `AD_JSNK_INIBEVERLOGO` | S/N | Esconde o campo de logo |
-| `AD_JSNK_INIBEMUDARLOGO` | S/N | Bloqueia customizar a logo |
-| `AD_JSNK_INIBEVERBUSCA` | S/N | Esconde o campo de pesquisa |
-| `AD_JSNK_INIBEMUDARBUSCA` | S/N | Bloqueia trocar o modo de busca |
-| `AD_JSNK_INIBEVERBOTOES` | S/N | Esconde o bloco de botões nativos |
-| `AD_JSNK_INIBEMUDARBOTOES` | S/N | Bloqueia exibir/esconder os botões nativos |
-| `AD_JSNK_INIBEVERPOPUP` | S/N | Esconde a seção "Popup" |
-| `AD_JSNK_INIBEMUDARPOPUP` | S/N | Bloqueia trocar o tema dos popups |
-| `AD_JSNK_TEMAPADINICIAL` | texto | Nome do tema custom aplicado por padrão no primeiro acesso |
-| `AD_JSNK_INIBEVERTEMA` | S/N | Esconde a seção "Temas" |
-| `AD_JSNK_INIBEINSTATEMA` | S/N | Bloqueia instalar tema novo (arraste no card) |
-| `AD_JSNK_INIBEMUDARTEMA` | S/N | Bloqueia trocar de tema já instalado |
-| `AD_JSNK_INIBEDEBUG` | S/N | Bloqueia o console de debug |
+| Campo                      | Tipo  | Efeito                                                                            |
+|----------------------------|-------|-----------------------------------------------------------------------------------|
+| `AD_JSNK_ATIVO`            | S/N   | JSNK ativado para este usuário/grupo (kill-switch: reverte tudo ao padrão nativo) |
+| `AD_JSNK_INIBEPOPUP`       | S/N   | Esconde o botão mágico inteiro (sem desativar o JSNK)                             |
+| `AD_JSNK_INIBEVERCONFG`    | S/N   | Esconde a seção "Aparência"                                                       |
+| `AD_JSNK_INIBEMUDARCOR`    | S/N   | Bloqueia trocar a cor de destaque                                                 |
+| `AD_JSNK_ACCENTPADRAO`     | hex   | Cor de destaque forçada                                                           |
+| `AD_JSNK_INIBEMUDARDARK`   | S/N   | Bloqueia alternar o modo escuro                                                   |
+| `AD_JSNK_DARKPADINICIAL`   | S/N   | Modo escuro já ligado no primeiro acesso                                          |
+| `AD_JSNK_INIBEMUDARABA`    | S/N   | Bloqueia trocar o estilo da aba                                                   |
+| `AD_JSNK_INIBEVERLOGO`     | S/N   | Esconde o campo de logo                                                           |
+| `AD_JSNK_INIBEMUDARLOGO`   | S/N   | Bloqueia customizar a logo                                                        |
+| `AD_JSNK_INIBEVERBUSCA`    | S/N   | Esconde o campo de pesquisa                                                       |
+| `AD_JSNK_INIBEMUDARBUSCA`  | S/N   | Bloqueia trocar o modo de busca                                                   |
+| `AD_JSNK_INIBEVERBOTOES`   | S/N   | Esconde o bloco de botões nativos                                                 |
+| `AD_JSNK_INIBEMUDARBOTOES` | S/N   | Bloqueia exibir/esconder os botões nativos                                        |
+| `AD_JSNK_INIBEVERPOPUP`    | S/N   | Esconde a seção "Popup"                                                           |
+| `AD_JSNK_INIBEMUDARPOPUP`  | S/N   | Bloqueia trocar o tema dos popups                                                 |
+| `AD_JSNK_TEMAPADINICIAL`   | texto | Nome do tema custom aplicado por padrão no primeiro acesso                        |
+| `AD_JSNK_INIBEVERTEMA`     | S/N   | Esconde a seção "Temas"                                                           |
+| `AD_JSNK_INIBEINSTATEMA`   | S/N   | Bloqueia instalar tema novo (arraste no card)                                     |
+| `AD_JSNK_INIBEMUDARTEMA`   | S/N   | Bloqueia trocar de tema já instalado                                              |
+| `AD_JSNK_INIBEINSTAWIDGET` | S/N   | Bloqueia instalar widget novo (arraste no card)                                   |
+| `AD_JSNK_INIBEDEBUG`       | S/N   | Bloqueia o console de debug                                                       |
 
-## Cache
-
-Toda URL do loader leva `&v=<VERSAO>`, e a `VERSAO` está dentro do componente. Ao
-publicar uma nova versão dos arquivos, use o `jsnk.zip` correspondente: isso
-invalida o cache do navegador de tudo de uma vez, sem pedir para o usuário limpar
-cache.
+</details>
 
 ## Requisitos e limitações
 
@@ -234,6 +333,24 @@ cache.
   JSNK pelo switch do próprio card antes de abrir a notificação, ou conferir
   numa sessão `0 - SUP` (não recebe nenhuma injeção — ver "Requisitos e
   limitações" acima).
+
+## Roadmap
+
+Melhorias planejadas, sem previsão de entrega:
+
+- Alternativa ao popup nativo de notificações no tema Win11.
+- Tratamento mais robusto de erros e casos de borda nos widgets.
+- Melhorias contínuas de usabilidade e desempenho.
+
+## Comunidade
+
+Troque experiências com outros desenvolvedores Sankhya na [comunidade não oficial no Discord](https://discord.gg/ke8DmDKdk7). Para relatar problemas ou sugerir melhorias no JSNK, [abra uma issue](https://github.com/wansleynery/JSNK/issues).
+
+## Agradecimentos
+Um agradecimento especial a [Maycon Gehlen](https://www.linkedin.com/in/maycon-gehlen) com o processo
+de injeção via NGINX e tema escuro.
+Um agradecimento também a todos da comunidade em geral que ajudaram em vários pontos que tornaram
+essa funcionalidade possível.
 
 ## Licença e crédito
 

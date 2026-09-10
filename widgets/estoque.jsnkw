@@ -1,0 +1,46 @@
+/*
+ * Widget de exemplo — lista o estoque atual por produto, com filtros de
+ * empresa (CODEMP, obrigatório), produto (opcional), ativo (checkbox),
+ * tipo (próprio/terceiros, lista) e data de alteração do produto (a partir
+ * de) editáveis direto no popup.
+ *
+ * A receita só pode chamar os comandos prontos (`filtrar`, `consultar`,
+ * `listar`) — nenhum widget executa JS livre nem SQL além de um
+ * SELECT.
+ */
+
+/* $TITULO:    Estoque Atual */
+/* $DESCRICAO: Detalha os estoques */
+/* $LARGURA:   500px */
+/* $ALTURA:    500px */
+
+filtrar ([
+    { campo: "CODEMP",   label: "Cód. Empresa", tipo: Number,  valor: 1 },
+    { campo: "CODPROD",  label: "Cód. Produto", tipo: Number },
+    { campo: "CODLOCAL", label: "Cód. Local",   tipo: Number },
+    { campo: "ATIVO",    label: "Ativo",        tipo: Boolean, valor: "S" },
+    { campo: "TIPO",     label: "Tipo",         tipo: String,  valor: "P", opcoes: [
+        { label: "Próprio",   value: "P" },
+        { label: "Terceiros", value: "T" },
+    ] },
+    { campo: "DTALTER", label: "Dt. Inicial", tipo: Date },
+]).then (filtros =>
+
+    consultar (() => (`
+        SELECT PRO.CODPROD                             AS Codigo,
+               SUBSTR (PRO.DESCRPROD, 0, 2) || '*****' AS Produto,
+               EST.CODLOCAL                            AS Local,
+               1234                                    AS Estoque
+          FROM TGFEST EST
+         INNER JOIN TGFPRO PRO ON PRO.CODPROD = EST.CODPROD
+         WHERE 1 = 1
+           AND (${filtros [0].valor} = 0 OR EST.CODEMP   = ${filtros [0].valor})
+           AND (${filtros [1].valor} = 0 OR EST.CODPROD  = ${filtros [1].valor})
+           AND (${filtros [2].valor} = 0 OR EST.CODLOCAL = ${filtros [2].valor})
+           AND COALESCE (EST.ATIVO, 'N') = '${filtros [3].valor}'
+           AND COALESCE (EST.TIPO,  'P')  = '${filtros [4].valor}'
+           AND (COALESCE (LENGTH ('${filtros [5].valor}'), 0) = 0 OR PRO.DTALTER >= TO_DATE ('${filtros [5].valor}', 'DD/MM/YYYY'))
+         ORDER BY PRO.DESCRPROD
+    `)).then (linhas => listar (linhas))
+
+);

@@ -935,6 +935,71 @@ html.dark-theme .gwt-PopupPanel.SimplePopup:has(.SearchPopup-searchPanel) {
     background: var(--win-hover) !important;
 }
 
+/* ================= MINIBARRA DE WIDGETS ================= */
+
+/* Mesma logica da secao CONTAINER/FUNDO: com a taskbar embaixo, a minibarra
+   fica ACIMA dela em vez de abaixo - so troca top/bottom (o resto do visual
+   e o mge/system.css do core que decide). `bottom: 41px` MEDIDO ao vivo
+   contra a altura real da taskbar deste tema (os outros popups do arquivo
+   usam 46px, valor solto sem essa mesma verificacao - ver POPUP DE
+   CONFIGURACAO acima). */
+#jsnk-minibar {
+    top: auto !important;
+    bottom: 41px !important;
+    border-bottom: none;
+    border-top: 1px solid var(--win-borda);
+    background: var(--win-bg) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+}
+html.dark-theme .Evo #jsnk-minibar {
+    filter: invert(1) hue-rotate(180deg);
+    background: var(--win-bg) !important;
+}
+
+/* A pill (mge/system.css) pinta a cor do texto esperando a inversao AMBIENTE
+   do modo escuro (`html.dark-theme{filter:invert(1)...}`, global.css)
+   devolver branco - mas o cancelamento acima (#jsnk-minibar com o MESMO
+   invert) neutraliza essa inversao pra tudo aqui dentro, entao o texto ficava
+   preto de verdade nos dois modos. Usa a variavel de texto real do tema
+   (ja resolvida certa em cada modo, sem depender de nenhuma inversao) em vez
+   de repetir o truque de pre-escurecer. */
+#jsnk-minibar .mge-widget-pill {
+    color: var(--win-texto) !important;
+}
+
+/* A ancora dos paineis de widget precisa de altura REAL mesmo sem o painel
+   crescer por ela - troca so top/bottom (mge/system.css cuida do resto).
+   `top:0` (NAO `auto`) e de proposito - BUG REAL ja visto ao vivo: com
+   `top:auto` e sem `height` explicito, a ancora encolhia pra ~0px de altura,
+   porque seu unico filho (`.jsnk-pilha-paineis`) e `position:absolute` e
+   isso NAO conta pra altura automatica de um pai (mesma familia do bug que o
+   `height:0` original desta ancora causava no core, so que por outro
+   mecanismo). Com `top:0` + `bottom:92px` os dois lados sao valores reais, a
+   altura fica definida sem depender de conteudo nenhum. 92px = a mesma folga
+   assumida pros outros popups deste tema (ver POPUP DE CONFIGURACAO acima) -
+   NAO MEDIDO ao vivo contra a altura real da minibar nesta versao, ajustar
+   se sobrar/faltar espaco numa base real. */
+#jsnk-widgets-ancora {
+    top: 0 !important;
+    bottom: 92px !important;
+}
+
+/* Painel de widget agora e uma FILEIRA horizontal (mge/system.css,
+   `#jsnk-widgets-ancora .jsnk-pilha-paineis`) - nao tem mais pilha vertical
+   crescendo pra algum lado pra inverter aqui (o `flex-direction:column-
+   reverse` que existia nesta regra foi removido, junto com o `bottom:-17px`
+   original que ele precisava pra colar na minibar de baixo pra cima). Resta
+   so reancorar a FILEIRA pela base, ja que a minibar deste tema fica embaixo
+   (ver acima), e virar o alinhamento pro fundo (`align-items:flex-end`) pra
+   os paineis colarem em cima da minibar em vez de nascerem grudados no topo
+   da tela (herdado do `top:-10px;align-items:flex-start` do core, pensado
+   pra minibar no topo). */
+#jsnk-widgets-ancora .jsnk-pilha-paineis {
+    top: auto !important;
+    bottom: -17px !important; /* medido ao vivo — 10px deixava um vao entre o painel e a minibar */
+    align-items: flex-end !important;
+}
+
 /* ================= CARD DE GADGET NO DASHBOARD ================= */
 
 /* .desktop-card e o quadrado de um gadget de BI na area de trabalho - CSS

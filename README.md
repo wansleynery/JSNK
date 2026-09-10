@@ -13,7 +13,7 @@
   <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
 </p>
 
-**Versão atual:** 87
+**Versão atual:** 88
 
 O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
@@ -256,10 +256,12 @@ consultar (() => `SELECT ... `)
 ```
 
 Comandos disponíveis: `consultar` (roda uma consulta `SELECT`), `filtrar`
-(campos editáveis que alimentam a consulta), `listar` (desenha o resultado
-como tabela), `dados` (lê os registros selecionados na tela atual, sem
-consulta nova) e `tela` (embute uma tela de BI inteira via iframe). Veja os
-arquivos da galeria acima para exemplos completos.
+(campos editáveis que alimentam a consulta — número, texto, booleano, data,
+uma lista fixa de opções, ou busca por entidade com autocomplete via
+`busca: texto => sql`), `listar` (desenha o resultado como tabela), `dados`
+(lê os registros selecionados na tela atual, sem consulta nova) e `tela`
+(embute uma tela de BI inteira via iframe). Veja os arquivos da galeria
+acima para exemplos completos.
 
 </details>
 
@@ -336,7 +338,6 @@ fronteira de segurança.
 
 Melhorias planejadas, sem previsão de entrega:
 
-- Busca e autocomplete por entidade nos filtros de widgets.
 - Alternativa ao popup nativo de notificações no tema Win11.
 - Tratamento mais robusto de erros e casos de borda nos widgets.
 - Melhorias contínuas de usabilidade e desempenho.

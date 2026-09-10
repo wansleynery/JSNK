@@ -13,7 +13,7 @@
   <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
 </p>
 
-**Versão atual:** 85
+**Versão atual:** 86
 
 O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
@@ -337,7 +337,6 @@ fronteira de segurança.
 Melhorias planejadas, sem previsão de entrega:
 
 - Busca e autocomplete por entidade nos filtros de widgets.
-- Atualização conjunta do componente e dos quatro scripts.
 - Alternativa ao popup nativo de notificações no tema Win11.
 - Tratamento mais robusto de erros e casos de borda nos widgets.
 - Melhorias contínuas de usabilidade e desempenho.

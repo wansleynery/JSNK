@@ -1,32 +1,99 @@
-# JSNK
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/02c568a9-e571-489b-9f72-963a4db4e0fc" alt="JSNK — personalização para o Sankhya" width="320">
+</p>
 
-> 💬 **Se sente meio esquecido por aí?** Desde a migração da plataforma oficial, o diálogo
-> entre devs Sankhya ficou mais difícil. Comunidade (não oficial) no Discord:
-> **<https://discord.gg/ke8DmDKdk7>** — bons códigos, amigo!
+<h1 align="center">JSNK</h1>
+<p align="center"><strong>Seu Sankhya, do seu jeito.</strong><br>Personalização visual e funcional com JavaScript e CSS, sem acessar o servidor.</p>
+
+<p align="center">
+  <a href="#instalação">Instalação</a> ·
+  <a href="https://youtu.be/LCmRlpRc9nA">Assistir ao tutorial</a> ·
+  <a href="temas/">Temas</a> ·
+  <a href="widgets/">Widgets</a> ·
+  <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
+</p>
 
 **Versão atual:** 85
 
----
+O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
-Customização visual e funcional do Sankhya por **injeção de scripts**, sem tocar no
-servidor.
+| Recurso | O que você pode fazer |
+| --- | --- |
+| Aparência | Ajustar cores, modo escuro, logo, abas e pesquisa. |
+| Temas | Instalar arquivos CSS arrastando para o card. |
+| Widgets | Abrir tabelas, filtros e telas de BI em painéis laterais. |
+| Preferências | Salvar configurações por usuário, entre dispositivos. |
+| Administração | Definir políticas de personalização por usuário ou grupo. |
 
-Personalizar o Sankhya por script normalmente exige acesso ao servidor de aplicação
-para injetar um `loader.js` em toda página e servir os arquivos de customização. O
-JSNK dispensa isso: ele se instala como um **componente do próprio Sankhya** e
-carrega os arquivos do **repositório de arquivos do Sankhya**. Funciona em qualquer
-base, inclusive nas hospedadas pela Sankhya, onde você não tem o servidor.
+## Instalação
 
-São duas peças independentes:
+### Assista ao passo a passo
 
-1. **Componente de lógica** — um único arquivo, `jsnk.jsp`, entregue em
-   `jsnk.zip`. Adicionado ao dashboard do usuário como **card**, carrega uma vez e
-   passa a aplicar as customizações em todas as telas.
-2. **Arquivos de customização** — ficam no repositório de arquivos do Sankhya, em
-   `Repo://scripts/`, servidos pelo `download.mge`. São atualizados arquivo por
-   arquivo pela própria UI do Sankhya, **sem redeploy do componente**.
+<p align="center">
+  <a href="https://youtu.be/LCmRlpRc9nA">
+    <img src="https://img.youtube.com/vi/LCmRlpRc9nA/hqdefault.jpg" alt="Assistir ao vídeo: instalação do JSNK no Sankhya, passo a passo" width="640">
+  </a>
+</p>
 
-## O que tem neste repositório
+**▶ [Assistir à instalação no YouTube](https://youtu.be/LCmRlpRc9nA)**
+
+### 1. Prepare os arquivos
+
+Baixe o repositório em **Code → Download ZIP** e extraia os arquivos. Para a instalação básica, você precisa de `jsnk.zip` e da pasta `scripts/`. As pastas `temas/`, `widgets/` e `bi/` são opcionais.
+
+### 2. Cadastre o componente BI
+
+No Sankhya, cadastre ou atualize um **Componente BI (HTML5)** com o arquivo `jsnk.zip` e defina o **entryPoint** como `jsnk.jsp`. O pacote não depende de um `nuGdg` fixo: não é necessário editar esse identificador para cada base.
+
+### 3. Libere o acesso e adicione o card
+
+Na tela **Acessos**, libere o componente para os usuários ou grupos que vão utilizar o JSNK. Depois, adicione o card ao **dashboard/portal inicial** desses usuários. A liberação por grupo facilita a manutenção dos acessos.
+
+> [!IMPORTANT]
+> O card instala o loader. Sem acesso liberado e sem o card no dashboard, as customizações não são carregadas. O usuário **`0 - SUP` não recebe customizações**, pois não aceita cards no dashboard.
+
+### 4. Envie os scripts
+
+No repositório de arquivos do Sankhya, envie o conteúdo de `scripts/` para `Repo://scripts/`, preservando **todos os nomes e subpastas**:
+
+```text
+scripts/global.css      → Repo://scripts/global.css
+scripts/global.js       → Repo://scripts/global.js
+scripts/mge/system.css  → Repo://scripts/mge/system.css
+scripts/mge/system.js   → Repo://scripts/mge/system.js
+```
+
+Os arquivos já estão minificados. Não acrescente `.min` nem renomeie os arquivos: o loader depende desses caminhos.
+
+### 5. Confira a instalação
+
+- Entre com um usuário autorizado, diferente de `0 - SUP`.
+- Abra o dashboard e confira se o card do JSNK aparece com o status ativo.
+- Abra o **botão mágico** na barra de tarefas para ajustar a aparência, caso ele não esteja oculto por uma política de administrador.
+
+## O card do JSNK
+
+O painel exibe logo ASCII, status, versão, tempo de atividade, tamanho e créditos. Ele acompanha a cor de destaque escolhida pelo usuário e se adapta aos tamanhos de card do Sankhya.
+
+| Controle | Comportamento |
+| --- | --- |
+| **Pausar/retomar** | O switch em `status` pausa a injeção e recarrega a janela. Ao religar, reinstala as customizações. Útil para comparar com a interface original. |
+| **Indicador de versão** | Vermelho indica uma versão mais nova no GitHub. A consulta depende da internet do navegador; sem conexão, mantém a cor padrão e o JSNK continua funcionando. |
+| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` mais recente e reinstala o componente para **todos os usuários da base**, após confirmação. |
+
+## Atualização e cache
+
+> [!WARNING]
+> O botão de atualizar e o arraste de `.zip` no card atualizam **somente o componente**. Quando uma versão também altera os quatro arquivos de `scripts/`, envie-os manualmente para `Repo://scripts/`. Mantenha componente e scripts da mesma versão.
+
+Os arquivos de customização podem ser substituídos individualmente, sem reinstalar o componente a cada edição. Nas atualizações de versão, use o `jsnk.zip` correspondente: o loader inclui `&v=<VERSAO>` nas URLs para invalidar o cache.
+
+<details>
+<summary><strong>Como o carregamento funciona e o que há no repositório</strong></summary>
+
+O componente `jsnk.jsp`, dentro de `jsnk.zip`, instala o loader na sessão do usuário. Os arquivos de customização são servidos pelo `download.mge`. O caminho de cada arquivo acompanha o caminho da tela; arquivos `global.css` e `global.js` são aplicados por nível de pasta, em cascata. O `global.css` da raiz alcança todos os módulos.
+
+### Estrutura dos arquivos
 
 ```
 jsnk.zip     ← sobe como Componente BI (HTML5), entryPoint = jsnk.jsp
@@ -46,70 +113,7 @@ propósito: o loader busca `mge/system.js`, então renomear quebra a resolução
 Esta versão traz a **customização geral da plataforma** — o que vale para o sistema
 inteiro (tema, shell, comportamentos globais).
 
-## Deploy
-
-### 1. Componente de lógica (uma vez, e a cada nova versão)
-
-1. No Sankhya, cadastre/atualize o **Componente BI (HTML5)** com o `jsnk.zip`,
-   `entryPoint = jsnk.jsp`.
-2. **Libere o acesso ao card** na tela **Acessos**, para os usuários ou grupos que
-   devem receber a customização. Sem essa liberação o card não aparece para o
-   usuário, e como é o card que instala o loader, nada é aplicado — é a causa mais
-   comum de "instalei e não mudou nada". Liberar por **grupo** é o caminho prático:
-   a customização passa a valer para quem entra no grupo, sem repetir o processo por
-   usuário.
-3. Adicione o componente como **card no dashboard/portal inicial** dos usuários.
-   É o card que instala o loader — sem ele, nada é aplicado.
-4. O componente não depende de `nuGdg` próprio: o mesmo zip funciona em qualquer
-   base, sem editar nada.
-
-O card não fica em branco. Ele mostra um painel estilo *neofetch* (logo ASCII +
-`status`, `versao`, `uptime`, `tamanho` e `creditos`, mais a paleta da cor de
-destaque), usa o accent escolhido pelo usuário e cabe em qualquer uma das nove
-resoluções de card do Sankhya (190/390/590 × 174/265/448) sem rolagem. A linha
-`creditos` leva dois links, para o autor e para este repositório — útil para quem
-encontrar o card numa base e quiser saber o que é.
-
-A linha `versao` mostra uma bolinha (cor de destaque = tudo certo, vermelha =
-existe uma versão mais nova aqui no GitHub). Essa checagem roda no **navegador do
-usuário** (bate num CDN público, fora da rede do Sankhya) — **se a máquina/rede
-de quem está com o navegador aberto não tiver saída à internet liberada** (VPN
-corporativa, firewall restritivo), ela simplesmente falha em silêncio: a bolinha
-fica na cor de destaque (padrão "sem novidade"), sem erro no console e sem
-atrasar ou travar nada, porque o resto do card e do loader não depende dela em
-nada. Não há como saber que existe uma versão nova sem essa
-saída à internet, mas também não há nenhum efeito colateral por não ter.
-
-O card também tem um **switch de pausar/retomar**, na linha `status` — desliga
-temporariamente toda a injeção (loader, scripts e CSS de tela) e recarrega a
-janela para valer, sem precisar logar como `0 - SUP` toda vez que você quiser
-comparar com a tela original. Religar reinstala tudo do zero.
-
-Quando a bolinha da linha `versao` acende vermelha (existe uma versão mais
-nova publicada), aparece ao lado um **botão de atualizar** (⇪): baixa o
-`jsnk.zip` mais recente direto do GitHub e reinstala o componente para
-**todos os usuários da base**, sem precisar abrir a tela nativa de
-"Construtor de Gadgets" e subir o zip manualmente. Pede confirmação antes de
-aplicar — a única ação do JSNK com um diálogo de confirmação do navegador,
-justamente porque troca o componente inteiro de uma vez.
-
-### 2. Arquivos de customização
-
-Suba o conteúdo de `scripts/` para `Repo://scripts/`, preservando a estrutura de
-pastas e os nomes:
-
-```
-scripts/global.css      →  Repo://scripts/global.css
-scripts/mge/system.js   →  Repo://scripts/mge/system.js
-```
-
-O caminho de cada arquivo espelha o caminho da tela no Sankhya, e o loader aplica um
-`global.css`/`global.js` por nível de pasta, em cascata. O `global.css` da raiz é o
-único que alcança todos os módulos — é por isso que o tema (cor de destaque e modo
-escuro) mora nele.
-
-Atualizar um arquivo de customização **não** exige mexer no componente — é a
-vantagem de separar as duas peças.
+</details>
 
 ## Personalização pelo usuário
 
@@ -157,7 +161,9 @@ temas/natal.css       tema sazonal
 Cada arquivo é autocontido — não dependem uns dos outros nem de nada fora do
 próprio `.css`.
 
-### Criando seu próprio tema
+<details>
+<summary><strong>Criando seu próprio tema</strong></summary>
+
 
 Qualquer `.css` funciona — arraste no card e pronto. O único contrato é
 opcional: um tema pode declarar metadados num comentário, no formato
@@ -184,6 +190,8 @@ versão. Com ela:
   bastante pra ficar incompatível. O tema aplica normalmente; só a parte que
   depende do recurso novo é que fica quebrada até a base atualizar.
 
+</details>
+
 ## Widgets
 
 Uma minibarra (`#jsnk-minibar`) aparece logo abaixo da barra de tarefas, com
@@ -208,7 +216,10 @@ No popup de configurações, a seção **Widgets** deixa **habilitar/desabilitar
 a barra inteira** e escolher o lado de **flutuação** (esquerda ou direita) em
 que a minibarra e os painéis abertos ficam ancorados.
 
-### Segurança: um widget nunca roda como JavaScript de verdade
+<details>
+<summary><strong>Desenvolvimento de widgets: comandos e sintaxe suportada</strong></summary>
+
+### Interpretador de widgets
 
 O arquivo `.jsnkw` é texto simples, numa sintaxe parecida com JavaScript
 (arrow functions, `.then()`, template strings), mas quem executa é um
@@ -243,7 +254,13 @@ como tabela), `dados` (lê os registros selecionados na tela atual, sem
 consulta nova) e `tela` (embute uma tela de BI inteira via iframe). Veja os
 arquivos da galeria acima para exemplos completos.
 
+</details>
+
 ## Políticas de administrador
+
+<details>
+<summary><strong>Consultar regras e campos de configuração</strong></summary>
+
 
 Um admin Sankhya pode restringir a personalização por **usuário** (`TSIUSU`)
 e/ou **grupo** (`TSIGRU`), cadastrando campos `AD_JSNK_*` opcionais nessas
@@ -278,12 +295,7 @@ fronteira de segurança.
 | `AD_JSNK_INIBEINSTAWIDGET` | S/N   | Bloqueia instalar widget novo (arraste no card)                                   |
 | `AD_JSNK_INIBEDEBUG`       | S/N   | Bloqueia o console de debug                                                       |
 
-## Cache
-
-Toda URL do loader leva `&v=<VERSAO>`, e a `VERSAO` está dentro do componente. Ao
-publicar uma nova versão dos arquivos, use o `jsnk.zip` correspondente: isso
-invalida o cache do navegador de tudo de uma vez, sem pedir para o usuário limpar
-cache.
+</details>
 
 ## Requisitos e limitações
 
@@ -315,40 +327,17 @@ cache.
 
 ## Roadmap
 
-Ideias e melhorias já mapeadas, sem data — ficam aqui pra quem quiser
-acompanhar (ou contribuir) por onde o projeto tende a andar:
+Melhorias planejadas, sem previsão de entrega:
 
-- **Campo de busca/autocomplete nos filtros de widget**: hoje `filtrar`
-  aceita número, texto, booleano, data e uma lista fixa de opções
-  (`opcoes`), mas não o tipo de campo mais comum nas telas do próprio
-  Sankhya — busca por entidade (ex.: digitar e escolher um Parceiro ou
-  Produto pelo nome, não pelo código). Sem ele, filtrar um widget por uma
-  entidade exige que o usuário já saiba o código de cor. A ideia é levar
-  esse mesmo tipo de campo (o que já existe pra tela clássica) pro
-  vocabulário de `filtrar`.
-- **Atualização do componente levando `global`/`mge/system` junto**: o
-  botão de atualizar (⇪) e o drag-and-drop de `.zip` no card hoje só trocam
-  o `jsnk.zip` — os quatro scripts publicados
-  (`global.css`/`global.js`/`mge/system.css`/`mge/system.js`) continuam
-  exigindo upload manual em `Repo://scripts/` toda vez que mudam junto com
-  uma versão nova do componente. Sem isso, é fácil uma base ficar com o
-  componente atualizado mas os scripts antigos (ou vice-versa), rodando uma
-  combinação que nunca foi testada junta. A ideia é a mesma ação de
-  atualizar já cobrir os quatro arquivos, não só o zip.
-- **Popup de notificação próprio no tema win11**: o bug conhecido acima
-  (notificação abre vazia) ainda não tem causa identificada — ele é do
-  JSNK como um todo, não do tema. Enquanto a causa raiz não aparece, a
-  ideia é reconstruir esse popup especificamente dentro do `win11.css`
-  (que já reestiliza boa parte da shell) em vez de continuar dependendo do
-  popup nativo do Sankhya, contornando o bug ali sem esperar a correção
-  definitiva.
-- **Mais robustez na implementação dos widgets**: cobrir casos de borda
-  ainda não tratados no interpretador/execução das receitas (`Widget`) —
-  falhas de rede a meio de uma consulta, um `.jsnkw` editado pra um formato
-  inesperado, esse tipo de coisa — pra que o painel sempre mostre um erro
-  claro em vez de travar ou ficar num estado inconsistente.
-- **Melhorias gerais**: ajustes contínuos de usabilidade e performance pela
-  base do projeto, sem uma feature específica associada ainda.
+- Busca e autocomplete por entidade nos filtros de widgets.
+- Atualização conjunta do componente e dos quatro scripts.
+- Alternativa ao popup nativo de notificações no tema Win11.
+- Tratamento mais robusto de erros e casos de borda nos widgets.
+- Melhorias contínuas de usabilidade e desempenho.
+
+## Comunidade
+
+Troque experiências com outros desenvolvedores Sankhya na [comunidade não oficial no Discord](https://discord.gg/ke8DmDKdk7). Para relatar problemas ou sugerir melhorias no JSNK, [abra uma issue](https://github.com/wansleynery/JSNK/issues).
 
 ## Agradecimentos
 Um agradecimento especial a [Maycon Gehlen](https://www.linkedin.com/in/maycon-gehlen) com o processo

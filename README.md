@@ -194,6 +194,13 @@ versão. Com ela:
 
 ## Widgets
 
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/477b26af-4747-4c77-9945-72669c3dc0cd">
+    <img src="https://github.com/user-attachments/assets/477b26af-4747-4c77-9945-72669c3dc0cd" alt="Demonstração dos widgets Estoque Atual e Contas a Vencer no Sankhya personalizado com JSNK" width="1000">
+  </a>
+</p>
+<p align="center"><em>Estoque Atual e Contas a Vencer no mesmo ambiente personalizado com JSNK. Imagem demonstrativa com dados ilustrativos; clique para ampliar.</em></p>
+
 Uma minibarra (`#jsnk-minibar`) aparece logo abaixo da barra de tarefas, com
 uma pílula para cada arquivo instalado em `Repo://widgets/`. Clicar numa
 pílula abre um painel lateral com o conteúdo do widget — tabela, filtro

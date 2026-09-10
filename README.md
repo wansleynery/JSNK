@@ -347,12 +347,10 @@ Melhorias planejadas, sem previsão de entrega:
 Troque experiências com outros desenvolvedores Sankhya na [comunidade não oficial no Discord](https://discord.gg/ke8DmDKdk7). Para relatar problemas ou sugerir melhorias no JSNK, [abra uma issue](https://github.com/wansleynery/JSNK/issues).
 
 ## Agradecimentos
-Um agradecimento especial a [Maycon Gehlen](https://www.linkedin.com/in/maycon-gehlen) com o processo
-de injeção via NGINX e tema escuro.
-Um agradecimento também a [Wanessa Brito](https://github.com/wanessabrito), que sugeriu e propôs o
-toggle pra ocultar a IA Copilot (Bia) na barra de tarefas.
-Um agradecimento também a todos da comunidade em geral que ajudaram em vários pontos que tornaram
-essa funcionalidade possível.
+
+- [Maycon Gehlen](https://www.linkedin.com/in/maycon-gehlen) — pelo processo original de injeção via NGINX e tema escuro.
+- [Wanessa Brito](https://github.com/wanessabrito) — sugeriu e propôs o toggle pra ocultar a IA Copilot (Bia) na barra de tarefas.
+- Comunidade em geral — por ajudar em vários pontos que tornaram essa funcionalidade possível.
 
 ## Licença e crédito
 

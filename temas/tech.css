@@ -247,6 +247,41 @@ html.dark-theme .Evo .Taskbar [data-mge-nova-aba] {
     opacity: .85 !important;
 }
 
+/* Foto do usuário no MODO CLARO (sem html.dark-theme) — bug real, achado ao
+   vivo: faltava esta regra e a foto sumia (virava um blob branco/preto
+   liso) em qualquer base usando este tema fora do modo escuro. Nada aqui
+   tem a ver com o <body>: é o próprio filtro genérico de ícone deste tema
+   (.Taskbar-icon { filter: brightness(0) invert(1) ... }, topo do arquivo)
+   que também bate na foto por ela ser um <img> de verdade — achata
+   qualquer retrato num círculo liso (mesmo efeito documentado em
+   win11.css, que resolve com :has(img)). Sem tema escuro ativo não existe
+   NENHUM invert de <html>/<body> rodando por perto, então a correção não é
+   contra-inversão nenhuma — é só desligar o filtro do ícone pra este caso.
+   4 classes (0,4,0) já bastam pra bater a regra genérica .Taskbar-icon
+   (0,1,0); o bloco de dark-theme logo abaixo (0,5,1) segue vencendo este
+   aqui quando o modo escuro está ativo, então os dois convivem sem
+   precisar de :not(.dark-theme). */
+.Evo .Taskbar .Taskbar-icon.icon-user-photo {
+    filter: none !important;
+}
+
+/* Mesmo motivo do bloco acima, mas pra foto do usuário NO MODO ESCURO:
+   mge/system.css tem `html.dark-theme .Taskbar-icon.icon-user-photo {
+   filter: invert(1) hue-rotate(180deg) !important; }` contando em SER A
+   ÚNICA correção — soma com o invert(1) do dark-theme no <body> e dá 2
+   contra-inversões (cancela certo). Só que dentro da nossa taskbar o
+   invert do body já foi cancelado pela nossa própria regra
+   (.Taskbar.Taskbar.Taskbar acima) — juntar as duas dá 3 contra-inversões
+   (ímpar), e a foto volta a aparecer invertida. Cancela a parte de
+   mge/system.css só aqui dentro, deixando só a nossa (que sozinha já
+   fecha a conta com o body). Não precisa repetir .Taskbar-icon/
+   .icon-user-photo pra especificidade — a regra de mge/system.css só tem
+   3 classes (0,0,3,1), e esta aqui, com .Evo/.Taskbar no caminho, já tem
+   5 (0,0,5,1). */
+html.dark-theme .Evo .Taskbar .Taskbar-icon.icon-user-photo {
+    filter: none !important;
+}
+
 /* Causa real do "hover escurece": a regra nativa de :hover
    (html.dark-theme .ListItem.AppItem .Taskbar-icon.icon-close:hover /
    [data-mge-nova-aba]:hover) mexe em FILTER (brightness(.15)

@@ -1,0 +1,38 @@
+/*
+ * Widget de exemplo — consulta de parceiros pelo motor do Sankhya Design
+ * System (ez-grid-view/ez-search, modo slim), em vez do <table>/<input> cru dos
+ * outros exemplos desta pasta. Um único filtro por CÓDIGO, mas digitado
+ * como uma BUSCA por nome (autocomplete) em vez de número cru: o campo
+ * declara `entidade: 'Parceiro'`, que troca a fonte de sugestões pro
+ * serviço nativo do Sankhya (`PesquisaSP.getSuggestion`, ver
+ * `Widget._buscarPorEntidade` / jsnk-api.md) — sem SQL nenhum escrito à
+ * mão pra resolver "nome digitado → CODPARC escolhido". Nada selecionado
+ * ainda entra como 0 na query (mesmo sentinela "0 = todos" de sempre —
+ * `_coagir` converte string vazia em `0` pro tipo Number).
+ *
+ * A receita só pode chamar os comandos prontos (`filtrar`, `consultar`,
+ * `listar`) — nenhum widget executa JS livre nem SQL além de um SELECT.
+ *
+ * Requer Repo://scripts/motor/motor.js + motor.css instalados na base
+ * (arraste os dois no card, mesmo dropzone de tema/widget — ver
+ * jsnk-api.md, `Tabela.listar`/`{motor:true}`).
+ */
+
+/* $TITULO:    Parceiros */
+/* $DESCRICAO: Consulta de parceiros */
+/* $LARGURA:   480px */
+/* $ALTURA:    460px */
+
+filtrar ([
+    { campo: "CODPARC", label: "Parceiro", entidade: 'Parceiro', tipo: Number }
+]).then (filtros =>
+
+    consultar (() => (`
+        SELECT CODPARC, NOMEPARC
+          FROM TGFPAR
+         WHERE (${filtros ["CODPARC"]} = 0 OR CODPARC = ${filtros ["CODPARC"]})
+           AND ROWNUM <= 50
+         ORDER BY NOMEPARC
+    `)).then (linhas => listar (linhas))
+
+);

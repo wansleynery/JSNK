@@ -35,7 +35,7 @@
 /* $ALTURA:    620px */
 
 filtrar ([
-    { campo: "CODEMP", label: "Cód. Empresa", tipo: Number, valor: 1 },
+    { campo: "CODEMP", label: "Cód. Empresa", tipo: Number,  valor: 1,   entidade: 'Empresa' },
 ]).then (filtros =>
-    tela (251, { CODEMP: filtros [0].valor })
+    tela (251, { CODEMP: filtros ["CODEMP"] })
 )

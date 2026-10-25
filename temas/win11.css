@@ -198,6 +198,22 @@ body:has(.gwt-PopupPanel.ListShortcutsMenuPopup) .Evo .Taskbar-icon.icon-menu {
     mask-position: center;
 }
 
+/* Este tema quer o botao de menu de aplicativo (o "Iniciar" com os 4
+   quadrados, acima) sempre habilitado - mesmo se o usuario desligou "Mostrar
+   menu do sistema" no popup (mge/system.js, aplicarVisibilidadeNativa,
+   S.SHOW_MENU: esconde `.icon-menu`/`[orig-title*="Menu do sistema"]` com
+   2 classes de especificidade cada). Mesma tecnica ja usada acima pro sino
+   de notificacao: forca visivel repetindo classe pra vencer por
+   especificidade (`.Taskbar-icon.icon-menu.icon-menu` = 3 classes > 2 da
+   regra que esconde), cobrindo os DOIS seletores que aquela regra usa -
+   pela classe e pelo fallback `orig-title`, pro caso de uma versao do
+   Sankhya sem a classe. display:flex, nao block: valor nativo de
+   `.Taskbar-icon`. */
+.Evo .Taskbar-icon.icon-menu.icon-menu,
+.Evo .Taskbar-container [orig-title*="Menu do sistema"] {
+    display: flex !important;
+}
+
 /* ================= REORDENACAO (menu / personalizacao / busca) ================= */
 
 /* A Taskbar e uma <table> - `order` so existe em flex/grid, entao a linha
@@ -328,24 +344,34 @@ body:has(.gwt-PopupPanel.ListShortcutsMenuPopup) .Evo .Taskbar-icon.icon-menu {
    versao antiga tinha um, e isso causava DUPLA inversao/texto preto no
    dark mode; nao reintroduzir). Vive dentro da <tr> flex, entao nao
    precisa de position:fixed nem right/bottom calculados. align-items:
-   flex-end alinha as duas linhas pela direita (jeito real do Windows). */
+   flex-end alinha as duas linhas pela direita (jeito real do Windows) - esse
+   e o eixo CRUZADO, porque o container e `flex-direction:column` (herdado
+   do inline do core, nunca sobrescrito aqui). `justify-content:center` e o
+   eixo PRINCIPAL (vertical, de cima pra baixo nesse layout) - BUG REAL
+   achado ao vivo (screenshot com o inspetor): sem isso o padrao e
+   `flex-start`, que empacota as duas linhas no TOPO da caixa e sobra o
+   espaco livre embaixo da data, dentro da `height:32px` fixa logo abaixo -
+   pareceria um espaco a mais só ali, sem motivo. `center` reparte esse
+   sobra igualmente acima/abaixo, centralizando o par hora+data na altura
+   fixa da caixa. */
 #mge-clock {
     display: flex !important;
     align-items: flex-end !important;
+    justify-content: center !important;
     font-family: var(--win-fonte), sans-serif !important;
     font-weight: 400 !important;
     color: var(--win-texto) !important;
     border-radius: 6px;
     transition: background-color .15s ease;
     padding: 3px 5px !important;
-    height: 25px !important;
+    height: 32px !important;
     width: 60px !important;
     margin-right: -10px !important;
     margin-left: -10px !important;
 }
 .mge-clock-hora,
 .mge-clock-data {
-    font-size: 12px;
+    font-size: 10px !important;
 }
 
 #mge-clock:hover {
@@ -990,14 +1016,34 @@ html.dark-theme .Evo #jsnk-minibar {
    reverse` que existia nesta regra foi removido, junto com o `bottom:-17px`
    original que ele precisava pra colar na minibar de baixo pra cima). Resta
    so reancorar a FILEIRA pela base, ja que a minibar deste tema fica embaixo
-   (ver acima), e virar o alinhamento pro fundo (`align-items:flex-end`) pra
-   os paineis colarem em cima da minibar em vez de nascerem grudados no topo
-   da tela (herdado do `top:-10px;align-items:flex-start` do core, pensado
-   pra minibar no topo). */
+   (ver acima).
+   `align-items` NAO e mais sobrescrito aqui (era `flex-end`, pra colar em
+   cima da minibar) - o core mudou de `flex-start` pra `stretch` (BUG REAL:
+   com widgets de altura diferente abertos lado a lado, a barra de rolagem
+   horizontal - que e do CONTAINER, nao de cada painel - colava so embaixo
+   do mais alto, deixando um vao vazio entre ela e os paineis mais baixos;
+   `stretch` faz todo painel ocupar a MESMA altura, entao a barra fica
+   encostada em todos). Com `stretch` todo painel ja preenche a fileira
+   inteira, do topo a base dela - reintroduzir `flex-end`/`flex-start` aqui
+   voltaria a desfazer o `stretch` do core so pra este tema (teria o vao vazio
+   de volta), sem ganhar nada: quem cola a fileira "em cima da minibar" e o
+   `bottom:-17px` abaixo, na propria FILEIRA, nao o alinhamento dos filhos.
+   `transform:none` CANCELA o `scaleY(-1)` do core (mge/system.css) nos dois
+   seletores - aquele espelha a fileira pra jogar a barra de rolagem
+   horizontal pra CIMA (pedido do usuario, tema padrao/minibar em cima: a
+   barra "em cima" fica colada logo abaixo da minibar). Aqui e o oposto: a
+   minibar fica EMBAIXO (ver `#jsnk-widgets-ancora` acima), a fileira ja
+   nasce colada nela por baixo (`bottom:-17px`), entao a barra ja nasce
+   natural do LADO CERTO (a borda de baixo da fileira, que e a borda de cima
+   da minibar) sem precisar de nenhum espelhamento - espelhar aqui jogaria a
+   barra pra longe da minibar, nao perto. */
 #jsnk-widgets-ancora .jsnk-pilha-paineis {
     top: auto !important;
     bottom: -17px !important; /* medido ao vivo — 10px deixava um vao entre o painel e a minibar */
-    align-items: flex-end !important;
+    transform: none !important;
+}
+#jsnk-widgets-ancora .jsnk-pilha-paineis > div {
+    transform: none !important;
 }
 
 /* ================= CARD DE GADGET NO DASHBOARD ================= */

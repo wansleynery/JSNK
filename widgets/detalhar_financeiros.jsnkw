@@ -15,7 +15,15 @@
  * campo de chave estrangeira pode chegar nesta leitura: um objeto
  * `{value, label}` (o comum nas telas novas/React) ou o valor cru — sem o
  * `?.`/`??`, um `CODPARC` que já viesse como número quebraria tentando ler
- * `.label` de algo que não é objeto.
+ * `.label` de algo que não é objeto. O `.filter` abaixo repete a mesma
+ * checagem pro lado do CÓDIGO (`?.value` em vez de `?.label`), pelo mesmo
+ * motivo — e usa `codParc` (0, nunca vazio: campo `tipo: Number` sem valor
+ * coage pra `Number('') === 0` em `_coagir`) como "sem filtro" porque 0
+ * nunca é um CODPARC válido. A comparação usa `+valor === codParc`
+ * (coerção numérica explícita via unário `+`, não `==`) porque `CODPARC`
+ * pode chegar como string vinda da consulta — `Number` como identificador
+ * solto não dá pra usar aqui, vira o marcador de tipo `'numero'` na
+ * linguagem do widget, nunca o construtor real (ver `jsnk-api.md`).
  */
 
 /* $TITULO:  Detalhar Financeiros */
@@ -23,13 +31,23 @@
 /* $ALTURA:  500px */
 /* $LARGURA: 400px */
 dados ({ entidade: 'Financeiro' }).then (registros => {
-    listar (
-        registros.dados.map (linha => ({
-            NUFIN:    linha.NUFIN,
-            Parcela:  linha.DESDOBRAMENTO,
-            Valor:    linha.VLRDESDOB,
-            Parceiro: linha.CODPARC?.label ?? linha.CODPARC,
-            Nota:     linha.NUNOTA,
-        }))
-    );
+
+    filtrar ([
+        { campo: "CODPARC",   label: "Parceiro", tipo: Number, entidade: 'Parceiro' }
+    ]).then (filtros => {
+        const idParceiro = filtros ["CODPARC"];
+
+        return listar (
+            registros.dados
+                .filter (linha => !idParceiro || +(linha.CODPARC?.value ?? linha.CODPARC) === idParceiro)
+                .map (linha => ({
+                    NUFIN:    linha.NUFIN,
+                    Parcela:  linha.DESDOBRAMENTO,
+                    Valor:    linha.VLRDESDOB,
+                    Parceiro: linha.CODPARC?.label ?? linha.CODPARC,
+                    Nota:     linha.NUNOTA,
+                }))
+        );
+    })
+
 })

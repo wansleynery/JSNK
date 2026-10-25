@@ -13,16 +13,16 @@
   <a href="https://discord.gg/ke8DmDKdk7">Comunidade</a>
 </p>
 
-**Versão atual:** 89
+**Versão atual:** 166
 
-O JSNK se instala como um componente BI do próprio Sankhya e carrega as customizações pelo repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
+O JSNK se instala como um componente BI do próprio Sankhya. As customizações gerais (tema, comportamentos e o visual dos widgets) já vêm dentro do componente; temas, widgets e scripts de tela específicos são lidos do repositório de arquivos da base. Também pode ser usado em bases hospedadas pela Sankhya, sem configuração de NGINX ou acesso ao servidor de aplicação.
 
-| Recurso | O que você pode fazer |
-| --- | --- |
-| Aparência | Ajustar cores, modo escuro, logo, abas e pesquisa. |
-| Temas | Instalar arquivos CSS arrastando para o card. |
-| Widgets | Abrir tabelas, filtros e telas de BI em painéis laterais. |
-| Preferências | Salvar configurações por usuário, entre dispositivos. |
+| Recurso       | O que você pode fazer                                     |
+|---------------|-----------------------------------------------------------|
+| Aparência     | Ajustar cores, modo escuro, logo, abas e pesquisa.        |
+| Temas         | Instalar arquivos CSS arrastando para o card.             |
+| Widgets       | Abrir tabelas, filtros e telas de BI em painéis laterais. |
+| Preferências  | Salvar configurações por usuário, entre dispositivos.     |
 | Administração | Definir políticas de personalização por usuário ou grupo. |
 
 ## Instalação
@@ -39,7 +39,7 @@ O JSNK se instala como um componente BI do próprio Sankhya e carrega as customi
 
 ### 1. Prepare os arquivos
 
-Baixe o repositório em **Code → Download ZIP** e extraia os arquivos. Para a instalação básica, você precisa de `jsnk.zip` e da pasta `scripts/`. As pastas `temas/`, `widgets/` e `bi/` são opcionais.
+Baixe o repositório em **Code → Download ZIP** e extraia os arquivos. Para a instalação básica, você só precisa do `jsnk.zip`. As pastas `temas/`, `widgets/` e `bi/` são opcionais.
 
 ### 2. Cadastre o componente BI
 
@@ -52,20 +52,7 @@ Na tela **Acessos**, libere o componente para os usuários ou grupos que vão ut
 > [!IMPORTANT]
 > O card instala o loader. Sem acesso liberado e sem o card no dashboard, as customizações não são carregadas. O usuário **`0 - SUP` não recebe customizações**, pois não aceita cards no dashboard.
 
-### 4. Envie os scripts
-
-No repositório de arquivos do Sankhya, envie o conteúdo de `scripts/` para `Repo://scripts/`, preservando **todos os nomes e subpastas**:
-
-```text
-scripts/global.css      → Repo://scripts/global.css
-scripts/global.js       → Repo://scripts/global.js
-scripts/mge/system.css  → Repo://scripts/mge/system.css
-scripts/mge/system.js   → Repo://scripts/mge/system.js
-```
-
-Os arquivos já estão minificados. Não acrescente `.min` nem renomeie os arquivos: o loader depende desses caminhos.
-
-### 5. Confira a instalação
+### 4. Confira a instalação
 
 - Entre com um usuário autorizado, diferente de `0 - SUP`.
 - Abra o dashboard e confira se o card do JSNK aparece com o status ativo.
@@ -79,36 +66,28 @@ O painel exibe logo ASCII, status, versão, tempo de atividade, tamanho e crédi
 | --- | --- |
 | **Pausar/retomar** | O switch em `status` pausa a injeção e recarrega a janela. Ao religar, reinstala as customizações. Útil para comparar com a interface original. |
 | **Indicador de versão** | Vermelho indica uma versão mais nova no GitHub. A consulta depende da internet do navegador; sem conexão, mantém a cor padrão e o JSNK continua funcionando. |
-| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` **e os quatro arquivos de `scripts/`** mais recentes do GitHub e reinstala tudo para **todos os usuários da base**, após confirmação — nunca uma combinação de versões diferentes entre componente e scripts. |
+| **Atualizar (⇪)** | Quando disponível, baixa o `jsnk.zip` mais recente do GitHub e reinstala o componente para **todos os usuários da base**, após confirmação. Os arquivos de customização (`global.*`, `mge/system.*`) vão dentro do zip, então componente e scripts nunca ficam em versões diferentes. |
 
 ## Atualização e cache
 
-> [!WARNING]
-> Arrastar um `.zip` local para o card atualiza **somente o componente** — os quatro arquivos de `scripts/` continuam exigindo envio manual (ou arraste deles também) para `Repo://scripts/`. Só o botão **Atualizar (⇪)** cobre os dois juntos, porque ele busca ambos do mesmo commit no GitHub.
-
-Os arquivos de customização podem ser substituídos individualmente, sem reinstalar o componente a cada edição. Nas atualizações de versão, use o `jsnk.zip` correspondente: o loader inclui `&v=<VERSAO>` nas URLs para invalidar o cache.
+Os arquivos de customização gerais (`global.css`, `global.js`, `mge/system.css`, `mge/system.js`) estão **embutidos no `jsnk.zip`**: nada de enviar arquivos para `Repo://scripts/`. Em contrapartida, qualquer alteração neles exige atualizar o componente (botão **Atualizar (⇪)** ou arrastar o `.zip` para o card). Scripts de tela específicos continuam sendo arquivos em `Repo://scripts/`, sem redeploy.
 
 <details>
 <summary><strong>Como o carregamento funciona e o que há no repositório</strong></summary>
 
-O componente `jsnk.jsp`, dentro de `jsnk.zip`, instala o loader na sessão do usuário. Os arquivos de customização são servidos pelo `download.mge`. O caminho de cada arquivo acompanha o caminho da tela; arquivos `global.css` e `global.js` são aplicados por nível de pasta, em cascata. O `global.css` da raiz alcança todos os módulos.
+O componente `jsnk.jsp`, dentro de `jsnk.zip`, instala o loader na sessão do usuário. Os arquivos gerais já vêm dentro do próprio componente; os scripts de tela são servidos pelo `download.mge`. O caminho de cada arquivo acompanha o caminho da tela; arquivos `global.css` e `global.js` são aplicados por nível de pasta, em cascata. O `global.css` da raiz alcança todos os módulos.
 
 ### Estrutura dos arquivos
 
 ```
 jsnk.zip     ← sobe como Componente BI (HTML5), entryPoint = jsnk.jsp
-scripts/     ← sobe para Repo://scripts/, mantendo a árvore e os nomes
-  global.css      tema: cor de destaque, modo escuro e estilos gerais
-  global.js       comportamentos aplicados em toda tela
-  mge/system.css  barra de tarefas e abas do shell
-  mge/system.js   tema, logo, busca rápida e popup de configurações
+              (embutidos no zip: global.css — tema, cor de destaque e modo escuro;
+               global.js — comportamentos globais; mge/system.css e mge/system.js —
+               barra de tarefas, abas, tema, logo, busca rápida e popup de configurações)
 temas/       ← galeria de temas prontos (opcional — ver "Temas customizados")
 widgets/     ← galeria de widgets prontos (opcional — ver "Widgets")
 bi/          ← exemplos de Componentes BI standalone, usados por alguns widgets
 ```
-
-Os arquivos estão minificados, prontos para uso. Os nomes **não** levam `.min` de
-propósito: o loader busca `mge/system.js`, então renomear quebra a resolução.
 
 Esta versão traz a **customização geral da plataforma** — o que vale para o sistema
 inteiro (tema, shell, comportamentos globais).
@@ -156,6 +135,7 @@ temas/rose.css        paleta rosa, só cor
 temas/sea-glass.css   paleta verde-água, só cor
 temas/halloween.css   tema sazonal
 temas/natal.css       tema sazonal
+temas/win11.css       estilo Windows 11 (barra de tarefas embaixo, menu Iniciar e relógio)
 ```
 
 Cada arquivo é autocontido — não dependem uns dos outros nem de nada fora do
@@ -206,6 +186,8 @@ uma pílula para cada arquivo instalado em `Repo://widgets/`. Clicar numa
 pílula abre um painel lateral com o conteúdo do widget — tabela, filtro
 interativo, ou até uma tela de BI inteira embutida.
 
+Os painéis usam os componentes do **Design System do próprio Sankhya** (grade, campos de filtro, calendário com hora e busca de cadastros), com o mesmo visual das telas novas. Um **botão com seta**, logo abaixo da barra, oculta ou mostra a minibarra — a escolha fica salva no navegador. No tema Windows 11 a minibarra fica na parte de baixo da tela, e a seta acompanha o lado.
+
 Assim como os temas, um arquivo `.jsnkw` sobe **arrastando no card** e fica
 disponível pra base inteira, sem precisar de nenhum redeploy do componente.
 
@@ -217,6 +199,7 @@ widgets/estoque.jsnkw                filtro (empresa/tipo/ativo) + tabela de est
 widgets/contas-a-vencer.jsnkw        abre a tela de BI "Contas a Vencer" (dist/bi/) embutida no painel
 widgets/detalhar_marcas.jsnkw        tabela com os registros selecionados na tela de Marcas
 widgets/detalhar_financeiros.jsnkw   tabela com os registros selecionados na tela de Financeiro
+widgets/parceiros.jsnkw              filtro por parceiro (busca por entidade) + tabela
 ```
 
 No popup de configurações, a seção **Widgets** deixa **habilitar/desabilitar
@@ -263,6 +246,18 @@ uma lista fixa de opções, ou busca por entidade com autocomplete via
 (embute uma tela de BI inteira via iframe). Veja os arquivos da galeria
 acima para exemplos completos.
 
+### Campos de filtro e listagem
+
+Cada campo de `filtrar` aceita `campo`, `label`, `tipo` (`Number`, `String`, `Boolean` ou `Date`), `valor` (inicial), `opcoes`, `busca` e `entidade`:
+
+- **`Date` é data com hora**, no formato `dd/mm/yyyy hh:mm` (aceita também só a data). No SQL, use a máscara com hora: `TO_DATE ('${filtros ["DTALTER"]}', 'DD/MM/YYYY HH24:MI')`. Máscara só com `'DD/MM/YYYY'` gera erro no Oracle.
+- **`entidade: 'Parceiro'`** abre a busca por cadastro (parceiro, empresa, produto…) sem escrever SQL. `busca: texto => sql` continua valendo para casos específicos (a consulta devolve as colunas `VALOR` e `LABEL`).
+- O valor de um filtro pode ser lido pelo nome (`filtros ["CODEMP"]`) ou pela posição (`filtros [0].valor`).
+- `dados` devolve `{ dados, selecionados }`: os registros carregados na tela e os selecionados. `dados ({ entidade: 'Financeiro' })` escolhe a entidade quando a tela tem mais de uma.
+- `listar (linhas, { larguras: { COLUNA: 120 } })` define larguras de coluna em pixels; `{ motor: false }` volta à tabela HTML simples.
+- Metadados no topo do arquivo: `$TITULO`, `$DESCRICAO`, `$LARGURA`, `$ALTURA` e `$TELA`.
+- **`consultar` só aceita `SELECT`.** Palavras de escrita (`INSERT`, `UPDATE`, `DELETE`, `DROP`…) fora de aspas e comentários, `FOR UPDATE` e comandos empilhados com `;` são recusados.
+
 </details>
 
 ## Políticas de administrador
@@ -302,6 +297,8 @@ fronteira de segurança.
 | `AD_JSNK_INIBEINSTATEMA`   | S/N   | Bloqueia instalar tema novo (arraste no card)                                     |
 | `AD_JSNK_INIBEMUDARTEMA`   | S/N   | Bloqueia trocar de tema já instalado                                              |
 | `AD_JSNK_INIBEINSTAWIDGET` | S/N   | Bloqueia instalar widget novo (arraste no card)                                   |
+| `AD_JSNK_INIBEVERWIDGET`   | S/N   | Esconde a seção "Widgets" (a minibarra em si não é afetada)                       |
+| `AD_JSNK_INIBEMUDARWIDGET` | S/N   | Bloqueia habilitar/desabilitar a minibarra e trocar a Flutuação                   |
 | `AD_JSNK_INIBEDEBUG`       | S/N   | Bloqueia o console de debug                                                       |
 
 </details>
@@ -319,8 +316,14 @@ fronteira de segurança.
 - **Momento da aplicação**: a injeção ocorre até ~500ms depois de a tela aparecer,
   e não durante o carregamento dela.
 - **Same-origin**: a injeção atravessa iframes, então só alcança frames de mesma
-  origem. Frames de outros cards BI (`html5component.mge`) são pulados de
-  propósito.
+  origem.
+- **Cards de BI** (`html5component.mge`) também recebem a injeção quando têm `nuGdg`
+  (os scripts ficam em `mge/html5component/<nuGdg>`). O card do próprio JSNK nunca
+  recebe, de propósito.
+- **Navegador**: baseado em Chromium 80 ou mais novo (Chrome, Edge e equivalentes) —
+  o visual dos widgets é carregado de forma comprimida pelo próprio navegador.
+- **Suporte**: no console da tela com problema, `copy (JSON.stringify (JSNK.diagnostico (), null, 2))`
+  gera um relatório do estado do JSNK (sem dados sensíveis) para anexar a uma issue.
 - Telas antigas (Angular) e as novas (React sobre web components `snk-*`/`ez-*`)
   são ambas suportadas.
 

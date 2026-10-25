@@ -228,6 +228,26 @@ html.dark-theme .Evo .Taskbar [data-mge-nova-aba] {
     color: #fff !important;
     opacity: .8 !important;
 }
+
+/* Foto do usuário no MODO CLARO: bug real achado ao vivo, faltava esta
+   regra e a foto sumia (virava um blob liso) em qualquer base usando este
+   tema fora do modo escuro — o culpado é o filtro genérico
+   .Taskbar-icon (topo do arquivo), não o <body> (que sem tema escuro nem
+   tem invert nenhum rodando); motivo completo em tech.css. */
+.Evo .Taskbar .Taskbar-icon.icon-user-photo {
+    filter: none !important;
+}
+
+/* Foto do usuário no MODO ESCURO: mesmo raciocínio do bloco de
+   icon-close/nova-aba acima, explicado em detalhe em tech.css.
+   mge/system.css conta em ser a ÚNICA contra-inversão da foto (soma 2 com
+   o invert(1) do <body> = cancela); como a nossa área da taskbar já
+   cancela esse invert por conta própria (regra .Taskbar.Taskbar.Taskbar
+   acima), as duas juntas dão 3 (ímpar) e a foto volta a inverter. Cancela
+   a parte de mge/system.css só aqui dentro. */
+html.dark-theme .Evo .Taskbar .Taskbar-icon.icon-user-photo {
+    filter: none !important;
+}
 html.dark-theme .Evo .Taskbar .AppItem .Taskbar-icon.icon-close.icon-close:hover {
     filter: brightness(0) invert(1) drop-shadow(0 0 1px rgba(0, 0, 0, .6)) !important;
     opacity: 1 !important;
